@@ -1,0 +1,6 @@
+@ZeeAcom_HostAddress = http://localhost:5020
+
+GET {{ZeeAcom_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
