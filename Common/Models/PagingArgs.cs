@@ -1,21 +1,20 @@
 ﻿namespace ZeeAcom.Common.Models;
-
 public class PagingArgs
 {
     private const int DefaultLimit = 20;
     private const int DefaultOffset = 0;
 
-    private int limit = DefaultLimit;
+    private int _limit = DefaultLimit;
 
     public static readonly PagingArgs NoPaging = new() { UsePaging = false };
-    public static readonly PagingArgs Default = new() { UsePaging = true,limit = DefaultLimit,Offset = DefaultOffset };
-    public static readonly PagingArgs FirstItem = new() { UsePaging = true,limit = 1,Offset = DefaultOffset };
+    public static readonly PagingArgs Default = new() { UsePaging = true, _limit = DefaultLimit, Offset = DefaultOffset };
+    public static readonly PagingArgs FirstItem = new() { UsePaging = true, _limit = 1, Offset = DefaultOffset };
 
-    public int Offset {  get; set; } = DefaultOffset;
+    public int Offset { get; set; } = DefaultOffset;
     public int Limit
     {
-        get => this.limit;
-        set => this.limit = value > 0 ? value : DefaultLimit;
+        get => _limit;
+        set => _limit = value > 0 ? value : DefaultLimit;
     }
     public bool UsePaging { get; set; } = true;
 }

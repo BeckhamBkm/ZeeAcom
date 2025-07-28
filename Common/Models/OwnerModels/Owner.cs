@@ -1,8 +1,8 @@
 ﻿using System.Numerics;
 
-namespace ZeeAcom.Common.Models
+namespace ZeeAcom.Common.Models.OwnerModels
 {
-    public class Owner
+    public sealed class OwnerModel
     {
         public Guid Id { get; set; }
         public string FirstName { get; set; }= string.Empty;

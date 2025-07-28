@@ -1,22 +1,31 @@
 ﻿namespace ZeeAcom.Common;
 using Serilog;
-
-public class Logging
+public static class Logging
 {
-    public static void LogInfo(string name,object data)
+    static Logging()
     {
-        Setup();
-        Log.Information(name,data);
+        Log.Logger = new LoggerConfiguration()
+            .Enrich.FromLogContext()
+            .WriteTo.File(@"logs\log-.txt",
+                rollingInterval: RollingInterval.Day,
+                retainedFileCountLimit: 7,
+                fileSizeLimitBytes: 10_000_000,
+                rollOnFileSizeLimit: true,
+                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}")
+            .CreateLogger();
+    }
+
+    public static void LogInfo(string name, object? data = null)
+    {
+        Log.Information("{Name}: {@Data}", name, data);
     }
 
     public static void LogException(Exception e)
     {
-        Setup();
-        Log.Fatal(e, "Exception");
+        Log.Error(e, "Exception occurred");
     }
 
-    private static void Setup() => Log.Logger = new LoggerConfiguration()
-        .Enrich.FromLogContext()
-        .WriteTo.File(@"logs\log.txt",rollingInterval:RollingInterval.Day)
-        .CreateLogger();
+    public static void Close() => Log.CloseAndFlush();
 }
+
+
