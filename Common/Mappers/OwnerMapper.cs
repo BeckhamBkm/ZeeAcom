@@ -1,4 +1,5 @@
 ﻿using Riok.Mapperly.Abstractions;
+using ZeeAcom.Common.Entities;
 using ZeeAcom.Common.Models.OwnerModels;
 namespace ZeeAcom.Common.Mappers;
 

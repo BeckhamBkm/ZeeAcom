@@ -1,4 +1,6 @@
-﻿namespace ZeeAcom.Common.Models.EntityModels;
+﻿using ZeeAcom.Common.Entities;
+
+namespace ZeeAcom.Common.Models.EntityModels;
 public sealed class EntityModel
 {
     public Guid Id { get; set; }
@@ -7,6 +9,16 @@ public sealed class EntityModel
     public string Suburb { get; set; } = string.Empty;
     public bool Active { get; set; }
     public DateTime DateCreated { get; set; }
-    public Guid OwnerId { get; set; }
     public Guid SessionId { get; set; }
+
+    /// <summary>
+    /// Collection Of pictures of the Entity
+    /// </summary>
+    public ICollection<Picture> Pictures { get; set; } = [];
+
+    /// <summary>
+    /// Owner Navigation Property
+    /// </summary>
+    public Guid OwnerId { get; set; }
+    public Owner Owner { get; set; } = null!;
 }
