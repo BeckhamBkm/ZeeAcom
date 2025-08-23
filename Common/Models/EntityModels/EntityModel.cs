@@ -1,4 +1,5 @@
 ﻿using ZeeAcom.Common.Entities;
+using ZeeAcom.Common.Models.OwnerModels;
 
 namespace ZeeAcom.Common.Models.EntityModels;
 public sealed class EntityModel
@@ -14,11 +15,11 @@ public sealed class EntityModel
     /// <summary>
     /// Collection Of pictures of the Entity
     /// </summary>
-    public ICollection<Picture> Pictures { get; set; } = [];
+    public ICollection<Picture?> Pictures { get; set; } = new List<Picture>();
 
-    /// <summary>
-    /// Owner Navigation Property
-    /// </summary>
     public Guid OwnerId { get; set; }
-    public Owner Owner { get; set; } = null!;
+    public OwnerModel Owner { get; set; }
+
+
+
 }

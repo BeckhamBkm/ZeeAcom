@@ -4,14 +4,18 @@ namespace ZeeAcom.Common.Entities
 {
     public sealed class Picture
     {
-        public Guid Id { get; set; }
-        public string Url { get; set; }
-        public DateTime DateUploaded { get; set; }
+        public int Id { get; set; }
 
-        /// <summary>
-        /// Navigation Property of The Entity
-        /// </summary>
+        public required string Task { get; set; }
+
+        public bool IsCompleted { get; set; }
+
+        public DateTime? DateCreated { get; set; }
+
+        public Guid SessionId { get; set; }
+
         public Guid EntityId { get; set; }
-        public Entity Entity { get; set; } = null!;
+        public Entity? Entity { get; set; }
+
     }
 }
