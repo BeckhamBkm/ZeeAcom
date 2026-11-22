@@ -3,6 +3,7 @@ using ZeeAcom.Api.Helpers;
 using ZeeAcom.Common.Models;
 using ZeeAcom.Common.Models.EntityModels;
 using ZeeAcom.Core.Entities.Commands;
+using ZeeAcom.Core.Entities.Queries;
 
 namespace ZeeAcom.Api.Controllers
 {
@@ -11,10 +12,16 @@ namespace ZeeAcom.Api.Controllers
     public class EntityController : ApiController
     {
 
-        //[HttpPost("Search")]
-        //[ProducesResponseType(typeof(Result<IEnumerable<EntityModel>>), 200)]
-        //public async Task<ActionResult<Result<IEnumerable<EntityModel>>>> Search(CancellationToken cancellationToken = default)
-        //    => ResponseHelper.ResponseOutcome(await Mediator.Send());
+        [HttpPost("search")]
+        [ProducesResponseType(typeof(Result<IEnumerable<EntityModel>>), 200)]
+        public async Task<ActionResult<Result<IEnumerable<EntityModel>>>> Search([FromBody] SearchEntityModel model, CancellationToken cancellationToken = default)
+            => ResponseHelper.ResponseOutcome(await this.Mediator.Send(new GetEntitiesQuery { Data = model }, cancellationToken), this);
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(Result), 200)]
+        [ProducesResponseType(400)]
+        public async Task<ActionResult<Result>> Delete(Guid id, CancellationToken cancellationToken = default)
+            => ResponseHelper.ResponseOutcome(await this.Mediator.Send(new DeleteEntityCommand { Id = id }, cancellationToken), this);
 
 
         [HttpPost]

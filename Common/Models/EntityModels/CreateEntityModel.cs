@@ -1,9 +1,16 @@
-﻿namespace ZeeAcom.Common.Models.EntityModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ZeeAcom.Common.Models.EntityModels
 {
     public sealed class CreateEntityModel
     {
+        [Required, StringLength(200)]
         public string Name { get; set; } = string.Empty;
+
+        [Required, StringLength(300)]
         public string Address { get; set; } = string.Empty;
+
+        [Required, StringLength(100)]
         public string Suburb { get; set; } = string.Empty;
         public bool Active { get; set; }
         public DateTime DateCreated { get; set; }

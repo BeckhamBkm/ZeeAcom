@@ -1,0 +1,49 @@
+@model PropertyCreateViewModel
+@{
+    ViewData["Title"] = "Add property";
+}
+
+<h1 class="h3 mb-3">Add property</h1>
+
+@if (!Model.OwnerOptions.Any())
+{
+    <div class="alert alert-info">
+        A property needs an owner. <a asp-controller="Owners" asp-action="Create" class="alert-link">Add an owner</a> first.
+    </div>
+}
+else
+{
+    <form method="post" asp-action="Create" class="col-lg-6">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+        <div class="mb-3">
+            <label asp-for="OwnerId" class="form-label">Owner</label>
+            <select asp-for="OwnerId" asp-items="Model.OwnerOptions" class="form-select">
+                <option value="">Choose an owner…</option>
+            </select>
+            <span asp-validation-for="OwnerId" class="text-danger small"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Name</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger small"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Address" class="form-label">Address</label>
+            <input asp-for="Address" class="form-control" />
+            <span asp-validation-for="Address" class="text-danger small"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Suburb" class="form-label">Suburb</label>
+            <input asp-for="Suburb" class="form-control" />
+            <span asp-validation-for="Suburb" class="text-danger small"></span>
+        </div>
+        <div class="form-check mb-3">
+            <input asp-for="Active" class="form-check-input" />
+            <label asp-for="Active" class="form-check-label">Active (available to list)</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" asp-route-ownerId="@Model.OwnerId" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+}

@@ -10,7 +10,8 @@ namespace ZeeAcom.Common.Models.OwnerModels
         public string LastName { get; set; } = string.Empty;
         public string CellPhone { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public DateTime DateCreated { get; set; }
+        //public DateTime DateCreated { get; set; }
+
 
         /// <summary>
         /// Collection of owner's entities

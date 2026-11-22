@@ -7,7 +7,7 @@ using ZeeAcom.Common.Models.OwnerModels;
 using ZeeAcom.Core.Entities.Commands;
 using ZeeAcom.DataAccess;
 
-namespace ZeeAcom.Core.Owners
+namespace ZeeAcom.Core.Owners.Commands
 {
     public class AddOwnerCommand : IRequest<Result<OwnerModel>>
     {
@@ -20,8 +20,7 @@ namespace ZeeAcom.Core.Owners
         public async Task<Result<OwnerModel>> Handle(AddOwnerCommand request, CancellationToken cancellationToken)
         {
             var owner = request.Data.Map();
-
-            
+    
             if (owner.Entities != null)
             {
                 foreach (var entity in owner.Entities)
@@ -70,10 +69,15 @@ namespace ZeeAcom.Core.Owners
                 }
             }
 
-            var entitySaveResult = await databaseContext.SaveChangesAsync(cancellationToken);
-            if (entitySaveResult <= 0)
+            // Only save again if the entity/picture loop actually queued something;
+            // an owner with no entities has nothing left to save, which is not an error.
+            if (databaseContext.ChangeTracker.HasChanges())
             {
-                return Result<OwnerModel>.Failure(Error);
+                var entitySaveResult = await databaseContext.SaveChangesAsync(cancellationToken);
+                if (entitySaveResult <= 0)
+                {
+                    return Result<OwnerModel>.Failure(Error);
+                }
             }
 
             // _cache.Remove(...);

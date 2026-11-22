@@ -1,0 +1,78 @@
+@model OwnerIndexViewModel
+@{
+    ViewData["Title"] = "Owners";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Owners</h1>
+    <a class="btn btn-primary" asp-action="Create">Add owner</a>
+</div>
+
+<form method="get" asp-action="Index" class="row g-2 mb-3">
+    <div class="col-sm-4">
+        <input asp-for="FirstName" class="form-control" placeholder="First name" />
+    </div>
+    <div class="col-sm-4">
+        <input asp-for="LastName" class="form-control" placeholder="Last name" />
+    </div>
+    <div class="col-sm-4 d-flex gap-2">
+        <button type="submit" class="btn btn-outline-primary">Search</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+    </div>
+</form>
+
+@if (!Model.Owners.Any())
+{
+    <p class="text-muted">No owners found.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>First name</th>
+                    <th>Last name</th>
+                    <th>Cell phone</th>
+                    <th>Email</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var owner in Model.Owners)
+                {
+                    <tr>
+                        <td>@owner.FirstName</td>
+                        <td>@owner.LastName</td>
+                        <td>@owner.CellPhone</td>
+                        <td>@owner.Email</td>
+                        <td class="text-end text-nowrap">
+                            <a class="btn btn-sm btn-outline-primary" asp-controller="Properties" asp-action="Index"
+                               asp-route-ownerId="@owner.Id">Properties</a>
+                            <form method="post" asp-action="Delete" asp-route-id="@owner.Id" class="d-inline"
+                                  onsubmit="return confirm('Delete @owner.FirstName @owner.LastName and all of their properties?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Owner pages">
+            <ul class="pagination">
+                @for (var p = 1; p <= Model.TotalPages; p++)
+                {
+                    <li class="page-item @(p == Model.Page ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@p"
+                           asp-route-firstName="@Model.FirstName" asp-route-lastName="@Model.LastName">@p</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+    <p class="text-muted small">@Model.Total owner(s)</p>
+}

@@ -17,8 +17,16 @@ public class AddEntityCommandHandler(DatabaseContext databaseContext, IAppCache 
     private const string Error = "Error ading an Entity";
     public async Task<Result<EntityModel>> Handle(AddEntityCommand request, CancellationToken cancellationToken)
     {
+        var owner = await databaseContext.Owners.FindAsync([request.Data.OwnerId], cancellationToken);
+        if (owner is null)
+        {
+            return Result<EntityModel>.Failure("Owner not found");
+        }
+
         var entity = request.Data.Map();
         entity.DateCreated = DateTime.UtcNow;
+        // The mapper doesn't set the Owner navigation; entity.Map() below needs it to build EntityModel.Owner.
+        entity.Owner = owner;
         databaseContext.Entities.Add(entity);
         var result = await databaseContext.SaveChangesAsync(cancellationToken);
 
