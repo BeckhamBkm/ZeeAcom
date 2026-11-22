@@ -2,9 +2,8 @@
 using MediatR;
 using ZeeAcom.Common.Mappers;
 using ZeeAcom.Common.Models;
-using ZeeAcom.Common.Models.EntityModels;
+using ZeeAcom.Common.Models.PropertyModels;
 using ZeeAcom.Common.Models.OwnerModels;
-using ZeeAcom.Core.Entities.Commands;
 using ZeeAcom.DataAccess;
 
 namespace ZeeAcom.Core.Owners.Commands
@@ -16,22 +15,22 @@ namespace ZeeAcom.Core.Owners.Commands
 
     public class AddOwnerCommandHandler(DatabaseContext databaseContext, IAppCache cache) : IRequestHandler<AddOwnerCommand, Result<OwnerModel>>
     {
-        private const string Error = "Error ading an Entity";
+        private const string Error = "Error adding an owner";
         public async Task<Result<OwnerModel>> Handle(AddOwnerCommand request, CancellationToken cancellationToken)
         {
             var owner = request.Data.Map();
     
-            if (owner.Entities != null)
+            if (owner.Properties != null)
             {
-                foreach (var entity in owner.Entities)
+                foreach (var property in owner.Properties)
                 {
-                    entity.Owner = null;
-                    entity.OwnerId = Guid.Empty;
-                    if (entity.Pictures != null)
+                    property.Owner = null!;
+                    property.OwnerId = Guid.Empty;
+                    if (property.Pictures != null)
                     {
-                        foreach (var picture in entity.Pictures)
+                        foreach (var picture in property.Pictures)
                         {
-                            picture.Entity = null;
+                            picture.Property = null!;
                         }
                     }
                 }
@@ -44,22 +43,22 @@ namespace ZeeAcom.Core.Owners.Commands
                 return Result<OwnerModel>.Failure(Error);
             }
 
-            if (owner.Entities != null)
+            if (owner.Properties != null)
             {
-                foreach (var entity in owner.Entities)
+                foreach (var property in owner.Properties)
                 {
-                    entity.OwnerId = owner.Id;
+                    property.OwnerId = owner.Id;
 
-                    if (databaseContext.Entry(entity).State == Microsoft.EntityFrameworkCore.EntityState.Detached)
+                    if (databaseContext.Entry(property).State == Microsoft.EntityFrameworkCore.EntityState.Detached)
                     {
-                        databaseContext.Entities.Add(entity);
+                        databaseContext.Properties.Add(property);
                     }
 
-                    if (entity.Pictures != null)
+                    if (property.Pictures != null)
                     {
-                        foreach (var picture in entity.Pictures)
+                        foreach (var picture in property.Pictures)
                         {
-                            picture.EntityId = entity.Id;
+                            picture.PropertyId = property.Id;
                             if (databaseContext.Entry(picture).State == Microsoft.EntityFrameworkCore.EntityState.Detached)
                             {
                                 databaseContext.Pictures.Add(picture);
@@ -69,12 +68,12 @@ namespace ZeeAcom.Core.Owners.Commands
                 }
             }
 
-            // Only save again if the entity/picture loop actually queued something;
-            // an owner with no entities has nothing left to save, which is not an error.
+            // Only save again if the property/picture loop actually queued something;
+            // an owner with no properties has nothing left to save, which is not an error.
             if (databaseContext.ChangeTracker.HasChanges())
             {
-                var entitySaveResult = await databaseContext.SaveChangesAsync(cancellationToken);
-                if (entitySaveResult <= 0)
+                var propertySaveResult = await databaseContext.SaveChangesAsync(cancellationToken);
+                if (propertySaveResult <= 0)
                 {
                     return Result<OwnerModel>.Failure(Error);
                 }

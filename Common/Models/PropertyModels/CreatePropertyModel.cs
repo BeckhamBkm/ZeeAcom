@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ZeeAcom.Common.Models.EntityModels
+namespace ZeeAcom.Common.Models.PropertyModels
 {
-    public sealed class CreateEntityModel
+    public sealed class CreatePropertyModel
     {
         [Required, StringLength(200)]
         public string Name { get; set; } = string.Empty;
@@ -17,9 +17,9 @@ namespace ZeeAcom.Common.Models.EntityModels
         public Guid SessionId { get; set; }
 
         /// <summary>
-        /// Collection Of pictures of the Entity
+        /// Collection of pictures of the property
         /// </summary>
-        public ICollection<Picture> Pictures { get; set; } = [];
+        public ICollection<PictureModel> Pictures { get; set; } = [];
 
         /// <summary>
         /// Owner Navigation Property

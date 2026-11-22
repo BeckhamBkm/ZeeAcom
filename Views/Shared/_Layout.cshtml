@@ -19,9 +19,17 @@
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Owners" asp-action="Index">Owners</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Properties" asp-action="Index">Properties</a></li>
+                        @if (User.IsInRole(ZeeAcom.Common.Roles.Admin))
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Owners" asp-action="Index">Owners</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Properties" asp-action="Index">Properties</a></li>
+                        }
+                        @if (User.IsInRole(ZeeAcom.Common.Roles.Landlord))
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Landlord" asp-action="Index">My listings</a></li>
+                        }
                     </ul>
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>

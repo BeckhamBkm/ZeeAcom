@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ZeeAcom.Api.Helpers;
 using ZeeAcom.Common.Models;
-using ZeeAcom.Common.Models.EntityModels;
+using ZeeAcom.Common.Models.PropertyModels;
 using ZeeAcom.Common.Models.OwnerModels;
 using ZeeAcom.Core.Owners;
 using ZeeAcom.Core.Owners.Commands;

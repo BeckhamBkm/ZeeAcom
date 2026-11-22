@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using ZeeAcom.Common.Models.EntityModels;
+using ZeeAcom.Common.Models.PropertyModels;
 
 namespace ZeeAcom.Web.Models;
 
@@ -17,7 +17,7 @@ public sealed class PropertyIndexViewModel
     public int Total { get; set; }
     public int TotalPages => PageSize <= 0 ? 1 : (int)Math.Ceiling(Total / (double)PageSize);
 
-    public IEnumerable<EntityModel> Properties { get; set; } = [];
+    public IEnumerable<PropertyModel> Properties { get; set; } = [];
 
     [ValidateNever]
     public IEnumerable<SelectListItem> OwnerOptions { get; set; } = [];
@@ -43,7 +43,7 @@ public sealed class PropertyCreateViewModel
     [ValidateNever]
     public IEnumerable<SelectListItem> OwnerOptions { get; set; } = [];
 
-    public CreateEntityModel ToCreateModel() => new()
+    public CreatePropertyModel ToCreateModel() => new()
     {
         Name = Name.Trim(),
         Address = Address.Trim(),

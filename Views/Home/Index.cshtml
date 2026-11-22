@@ -3,8 +3,21 @@
 }
 
 <div class="p-5 mb-4 bg-body-tertiary rounded-3">
-    <h1 class="display-5 fw-bold">ZeeAcom</h1>
-    <p class="col-md-8 fs-5">Manage accommodation owners and their properties.</p>
-    <a class="btn btn-primary btn-lg" asp-controller="Owners" asp-action="Index">View owners</a>
-    <a class="btn btn-primary btn-lg" asp-controller="Properties" asp-action="Index">View properties</a>
+    <h1 class="display-5 fw-bold">Zee Accom</h1>
+    <p class="col-md-8 fs-5">Accommodation in Zeerust: rooms, flats and houses listed by local landlords.</p>
+
+    @if (User.IsInRole(ZeeAcom.Common.Roles.Admin))
+    {
+        <a class="btn btn-primary btn-lg" asp-controller="Owners" asp-action="Index">Manage owners</a>
+        <a class="btn btn-primary btn-lg" asp-controller="Properties" asp-action="Index">Manage properties</a>
+    }
+    else if (User.IsInRole(ZeeAcom.Common.Roles.Landlord))
+    {
+        <a class="btn btn-primary btn-lg" asp-controller="Landlord" asp-action="Index">My listings</a>
+    }
+    else
+    {
+        <a class="btn btn-primary btn-lg" asp-controller="Account" asp-action="Register">Register as a landlord</a>
+        <a class="btn btn-outline-secondary btn-lg" asp-controller="Account" asp-action="Login">Log in</a>
+    }
 </div>

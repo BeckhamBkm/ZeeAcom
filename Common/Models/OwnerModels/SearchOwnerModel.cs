@@ -1,4 +1,4 @@
-﻿namespace ZeeAcom.Common.Models.EntityModels
+﻿namespace ZeeAcom.Common.Models.OwnerModels
 {
     public class SearchOwnerModel
     {

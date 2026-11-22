@@ -1,18 +1,27 @@
-﻿using ZeeAcom.Common.Models.EntityModels;
+﻿namespace ZeeAcom.Common.Entities;
 
-namespace ZeeAcom.Common.Entities;
-public sealed class Owner
+/// <summary>
+/// A landlord who owns one or more properties.
+/// </summary>
+public partial class Owner
 {
-    public Guid Id { get; set; } = System.Guid.NewGuid();   
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
-    public string CellPhone { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    //public DateTime DateCreated { get; set; }
+    public Guid Id { get; set; }
+
+    public string FirstName { get; set; } = null!;
+
+    public string LastName { get; set; } = null!;
+
+    public string CellPhone { get; set; } = null!;
+
+    public string Email { get; set; } = null!;
+    //public DateTime? DateCreated { get; set; }
 
     /// <summary>
-    /// Collection of owner's entities
+    /// The landlord's login account. Null for owners added by the admin who don't log in.
     /// </summary>
-    public ICollection<Entity?>? Entities { get; set; } = new List<Entity?>();
+    public string? UserId { get; set; }
 
+    public virtual ApplicationUser? User { get; set; }
+
+    public virtual ICollection<Property> Properties { get; set; } = new List<Property>();
 }

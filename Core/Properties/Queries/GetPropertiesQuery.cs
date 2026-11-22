@@ -2,25 +2,25 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ZeeAcom.Common.Extensions;
 using ZeeAcom.Common.Models;
-using ZeeAcom.Common.Models.EntityModels;
+using ZeeAcom.Common.Models.PropertyModels;
 using ZeeAcom.Common.Models.OwnerModels;
 using ZeeAcom.DataAccess;
 
-namespace ZeeAcom.Core.Entities.Queries;
+namespace ZeeAcom.Core.Properties.Queries;
 
-public class GetEntitiesQuery : IRequest<Result<IEnumerable<EntityModel>>>
+public class GetPropertiesQuery : IRequest<Result<IEnumerable<PropertyModel>>>
 {
-    public required SearchEntityModel Data { get; set; }
+    public required SearchPropertyModel Data { get; set; }
 }
 
-public class GetEntitiesQueryHandler(DatabaseContext databaseContext)
-    : IRequestHandler<GetEntitiesQuery, Result<IEnumerable<EntityModel>>>
+public class GetPropertiesQueryHandler(DatabaseContext databaseContext)
+    : IRequestHandler<GetPropertiesQuery, Result<IEnumerable<PropertyModel>>>
 {
-    public async Task<Result<IEnumerable<EntityModel>>> Handle(GetEntitiesQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<PropertyModel>>> Handle(GetPropertiesQuery request, CancellationToken cancellationToken)
     {
         var search = request.Data;
 
-        var query = databaseContext.Entities
+        var query = databaseContext.Properties
             .AsNoTracking()
             .FilterByOwner(search.OwnerId)
             .FilterByName(search.Name)
@@ -30,11 +30,11 @@ public class GetEntitiesQueryHandler(DatabaseContext databaseContext)
         var count = await query.CountAsync(cancellationToken);
 
         // Project straight to the model (instead of the Mapperly mappers) so EF only selects
-        // the columns needed and we don't walk the Owner -> Entities -> Owner cycle.
+        // the columns needed and we don't walk the Owner -> Properties -> Owner cycle.
         var items = await query
             .OrderByDescending(e => e.DateCreated)
             .ApplyPaging(search.PagingArgs)
-            .Select(e => new EntityModel
+            .Select(e => new PropertyModel
             {
                 Id = e.Id,
                 Name = e.Name,
@@ -55,6 +55,6 @@ public class GetEntitiesQueryHandler(DatabaseContext databaseContext)
             })
             .ToListAsync(cancellationToken);
 
-        return Result<IEnumerable<EntityModel>>.Success(items, count);
+        return Result<IEnumerable<PropertyModel>>.Success(items, count);
     }
 }

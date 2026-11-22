@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using ZeeAcom.Common.Models.EntityModels;
+﻿using ZeeAcom.Common.Models.PropertyModels;
 
 namespace ZeeAcom.Common.Models.OwnerModels
 {
@@ -12,10 +11,9 @@ namespace ZeeAcom.Common.Models.OwnerModels
         public string Email { get; set; } = string.Empty;
         //public DateTime DateCreated { get; set; }
 
-
         /// <summary>
-        /// Collection of owner's entities
+        /// Collection of owner's properties
         /// </summary>
-        public ICollection<Entity?>? Entities { get; set; } = new List<Entity?>();
+        public ICollection<PropertyModel> Properties { get; set; } = new List<PropertyModel>();
     }
 }

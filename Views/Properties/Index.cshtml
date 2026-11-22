@@ -67,7 +67,7 @@ else
                         <td>@property.Address</td>
                         <td>@property.Suburb</td>
                         <td>
-                            <a asp-action="Index" asp-route-ownerId="@property.OwnerId">@property.Owner.FirstName @property.Owner.LastName</a>
+                            <a asp-action="Index" asp-route-ownerId="@property.OwnerId">@property.Owner?.FirstName @property.Owner?.LastName</a>
                         </td>
                         <td>
                             @if (property.Active)

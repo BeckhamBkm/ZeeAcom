@@ -1,18 +1,22 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using ZeeAcom.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ZeeAcom.Common.Models;
-using ZeeAcom.Common.Models.EntityModels;
-using ZeeAcom.Core.Entities.Commands;
-using ZeeAcom.Core.Entities.Queries;
+using ZeeAcom.Common.Models.OwnerModels;
+using ZeeAcom.Common.Models.PropertyModels;
+using ZeeAcom.Core.Properties.Commands;
+using ZeeAcom.Core.Properties.Queries;
 using ZeeAcom.Core.Owners.Queries;
 using ZeeAcom.Web.Models;
 
 namespace ZeeAcom.Web.Controllers;
 
 /// <summary>
-/// Razor pages for properties (the `Entity` table). Uses the same MediatR handlers as Api/Controllers/EntityController.
+/// Razor pages for properties. Uses the same MediatR handlers as Api/Controllers/PropertyController.
 /// </summary>
+[Authorize(Roles = Roles.Admin)]
 public class PropertiesController(IMediator mediator) : Controller
 {
     private const int PageSize = 20;
@@ -23,9 +27,9 @@ public class PropertiesController(IMediator mediator) : Controller
     {
         page = Math.Max(1, page);
 
-        var result = await mediator.Send(new GetEntitiesQuery
+        var result = await mediator.Send(new GetPropertiesQuery
         {
-            Data = new SearchEntityModel
+            Data = new SearchPropertyModel
             {
                 Name = name,
                 Suburb = suburb,
@@ -72,7 +76,7 @@ public class PropertiesController(IMediator mediator) : Controller
             return View(model);
         }
 
-        var result = await mediator.Send(new AddEntityCommand { Data = model.ToCreateModel() }, cancellationToken);
+        var result = await mediator.Send(new AddPropertyCommand { Data = model.ToCreateModel() }, cancellationToken);
         if (result.IsFailure)
         {
             ModelState.AddModelError(string.Empty, result.FirstError);
@@ -88,7 +92,7 @@ public class PropertiesController(IMediator mediator) : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(Guid id, Guid? ownerId, CancellationToken cancellationToken = default)
     {
-        var result = await mediator.Send(new DeleteEntityCommand { Id = id }, cancellationToken);
+        var result = await mediator.Send(new DeletePropertyCommand { Id = id }, cancellationToken);
         TempData[result.IsFailure ? "Error" : "Success"] = result.IsFailure ? result.FirstError : "Property deleted.";
 
         return RedirectToAction(nameof(Index), new { ownerId });

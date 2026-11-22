@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ZeeAcom.Common.Models.PropertyModels;
 
 namespace ZeeAcom.Common.Models.OwnerModels
 {
@@ -17,8 +18,8 @@ namespace ZeeAcom.Common.Models.OwnerModels
         public string Email { get; set; } = string.Empty;
 
         /// <summary>
-        /// Collection of owner's entities
+        /// Collection of owner's properties
         /// </summary>
-        public ICollection<Entity?>? Entities { get; set; } = new List<Entity?>();
+        public ICollection<CreatePropertyModel> Properties { get; set; } = new List<CreatePropertyModel>();
     }
 }

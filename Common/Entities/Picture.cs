@@ -1,21 +1,14 @@
-﻿using ZeeAcom.Common.Models.EntityModels;
+﻿namespace ZeeAcom.Common.Entities;
 
-namespace ZeeAcom.Common.Entities
+public partial class Picture
 {
-    public sealed class Picture
-    {
-        public int Id { get; set; }
+    public Guid Id { get; set; }
 
-        public required string Task { get; set; }
+    public string Url { get; set; } = null!;
 
-        public bool IsCompleted { get; set; }
+    public DateTime DateUploaded { get; set; }
 
-        public DateTime? DateCreated { get; set; }
+    public Guid PropertyId { get; set; }
 
-        public Guid SessionId { get; set; }
-
-        public Guid EntityId { get; set; }
-        public Entity? Entity { get; set; }
-
-    }
+    public virtual Property Property { get; set; } = null!;
 }

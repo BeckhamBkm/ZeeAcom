@@ -1,8 +1,8 @@
-﻿using ZeeAcom.Common.Entities;
-using ZeeAcom.Common.Models.OwnerModels;
+﻿using ZeeAcom.Common.Models.OwnerModels;
 
-namespace ZeeAcom.Common.Models.EntityModels;
-public sealed class EntityModel
+namespace ZeeAcom.Common.Models.PropertyModels;
+
+public sealed class PropertyModel
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
@@ -13,13 +13,10 @@ public sealed class EntityModel
     public Guid SessionId { get; set; }
 
     /// <summary>
-    /// Collection Of pictures of the Entity
+    /// Collection of pictures of the property
     /// </summary>
-    public ICollection<Picture?> Pictures { get; set; } = new List<Picture>();
+    public ICollection<PictureModel> Pictures { get; set; } = new List<PictureModel>();
 
     public Guid OwnerId { get; set; }
-    public OwnerModel Owner { get; set; }
-
-
-
+    public OwnerModel? Owner { get; set; }
 }

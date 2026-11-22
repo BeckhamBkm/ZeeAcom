@@ -1,6 +1,6 @@
-namespace ZeeAcom.Common.Models.EntityModels;
+namespace ZeeAcom.Common.Models.PropertyModels;
 
-public class SearchEntityModel
+public class SearchPropertyModel
 {
     public string? Name { get; set; }
     public string? Suburb { get; set; }

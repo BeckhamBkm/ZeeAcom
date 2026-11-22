@@ -1,7 +1,9 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using ZeeAcom.Common;
 using Microsoft.AspNetCore.Mvc;
 using ZeeAcom.Common.Models;
-using ZeeAcom.Common.Models.EntityModels;
+using ZeeAcom.Common.Models.PropertyModels;
 using ZeeAcom.Common.Models.OwnerModels;
 using ZeeAcom.Core.Owners.Commands;
 using ZeeAcom.Core.Owners.Queries;
@@ -12,6 +14,7 @@ namespace ZeeAcom.Web.Controllers;
 /// <summary>
 /// Razor pages for owners. Uses the same MediatR handlers as Api/Controllers/OwnerController.
 /// </summary>
+[Authorize(Roles = Roles.Admin)]
 public class OwnersController(IMediator mediator) : Controller
 {
     private const int PageSize = 20;

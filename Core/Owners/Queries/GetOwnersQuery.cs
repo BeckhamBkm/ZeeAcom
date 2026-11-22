@@ -1,11 +1,12 @@
 ﻿using LazyCache;
+using ZeeAcom.Common.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ZeeAcom.Common;
 using ZeeAcom.Common.Extensions;
 using ZeeAcom.Common.Mappers;
 using ZeeAcom.Common.Models;
-using ZeeAcom.Common.Models.EntityModels;
+using ZeeAcom.Common.Models.PropertyModels;
 using ZeeAcom.Common.Models.OwnerModels;
 using ZeeAcom.DataAccess;
 

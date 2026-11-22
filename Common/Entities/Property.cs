@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace ZeeAcom.Common.Entities;
 
-namespace ZeeAcom;
-
-public partial class Entity
+/// <summary>
+/// A listed accommodation property (house, flat, cottage...). Stored in the "Property" table.
+/// </summary>
+public partial class Property
 {
     public Guid Id { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ZeeAcom.Common.Entities;
 
 namespace ZeeAcom.Core.Owners.Queries
 {
