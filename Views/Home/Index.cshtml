@@ -1,23 +1,76 @@
+@model HomePageViewModel
+@using ZeeAcom.Common
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Accommodation in Zeerust";
+    ViewData["Description"] = "Find rooms, flats and houses to rent in Zeerust, listed by local landlords.";
 }
 
-<div class="p-5 mb-4 bg-body-tertiary rounded-3">
-    <h1 class="display-5 fw-bold">Zee Accom</h1>
-    <p class="col-md-8 fs-5">Accommodation in Zeerust: rooms, flats and houses listed by local landlords.</p>
+<div class="p-4 p-md-5 mb-4 bg-body-tertiary rounded-3">
+    <h1 class="display-6 fw-bold">Find a place to stay in Zeerust</h1>
+    <p class="fs-5 col-lg-8">Rooms, flats and houses listed by local landlords. Contact them directly on WhatsApp.</p>
 
-    @if (User.IsInRole(ZeeAcom.Common.Roles.Admin))
+    <form method="get" asp-controller="Listings" asp-action="Index" class="row g-2 col-lg-9">
+        <div class="col-12 col-sm-5">
+            <label class="visually-hidden" for="suburb">Area</label>
+            <select id="suburb" name="suburb" class="form-select form-select-lg">
+                <option value="">All areas</option>
+                @foreach (var suburb in Model.Suburbs)
+                {
+                    <option value="@suburb">@suburb</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-sm-4">
+            <label class="visually-hidden" for="maxRent">Max rent</label>
+            <select id="maxRent" name="maxRent" class="form-select form-select-lg">
+                <option value="">Any rent</option>
+                @foreach (var step in ListingsPageViewModel.RentSteps)
+                {
+                    <option value="@step">Up to @Currency.Rand(step)</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-sm-3 d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">Search</button>
+        </div>
+    </form>
+
+    <div class="mt-4">
+        @if (User.IsInRole(Roles.Admin))
+        {
+            <a class="btn btn-outline-secondary" asp-controller="Owners" asp-action="Index">Manage owners</a>
+            <a class="btn btn-outline-secondary" asp-controller="Properties" asp-action="Index">Manage properties</a>
+        }
+        else if (User.IsInRole(Roles.Landlord))
+        {
+            <a class="btn btn-outline-secondary" asp-controller="Landlord" asp-action="Index">My listings</a>
+        }
+        else
+        {
+            <span class="text-muted me-2">Got a place to rent out?</span>
+            <a asp-controller="Account" asp-action="Register">List it for free</a>
+        }
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-baseline mb-3">
+    <h2 class="h4 mb-0">Latest listings</h2>
+    @if (Model.TotalListings > 0)
     {
-        <a class="btn btn-primary btn-lg" asp-controller="Owners" asp-action="Index">Manage owners</a>
-        <a class="btn btn-primary btn-lg" asp-controller="Properties" asp-action="Index">Manage properties</a>
-    }
-    else if (User.IsInRole(ZeeAcom.Common.Roles.Landlord))
-    {
-        <a class="btn btn-primary btn-lg" asp-controller="Landlord" asp-action="Index">My listings</a>
-    }
-    else
-    {
-        <a class="btn btn-primary btn-lg" asp-controller="Account" asp-action="Register">Register as a landlord</a>
-        <a class="btn btn-outline-secondary btn-lg" asp-controller="Account" asp-action="Login">Log in</a>
+        <a asp-controller="Listings" asp-action="Index">See all @Model.TotalListings</a>
     }
 </div>
+
+@if (!Model.LatestListings.Any())
+{
+    <p class="text-muted">No listings yet. Check back soon.</p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+        @foreach (var listing in Model.LatestListings)
+        {
+            <div class="col"><partial name="_ListingCard" model="listing" /></div>
+        }
+    </div>
+}

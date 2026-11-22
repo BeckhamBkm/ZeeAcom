@@ -1,0 +1,61 @@
+@model IEnumerable<ZeeAcom.Common.Models.EnquiryModels.EnquiryModel>
+@{
+    ViewData["Title"] = "Enquiries";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">My listings</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Enquiries</li>
+    </ol>
+</nav>
+
+<h1 class="h3 mb-3">Enquiries</h1>
+
+@if (!Model.Any())
+{
+    <div class="border rounded p-4 text-center text-muted">
+        No enquiries yet. They'll appear here when someone contacts you through one of your listings.
+    </div>
+}
+else
+{
+    <div class="vstack gap-3">
+        @foreach (var enquiry in Model)
+        {
+            var whatsApp = PhoneLinks.WhatsApp(enquiry.CellPhone, $"Hi {enquiry.Name}, thanks for your enquiry about {enquiry.PropertyName} on Zee Accom.");
+            var call = PhoneLinks.Tel(enquiry.CellPhone);
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between flex-wrap gap-2 mb-2">
+                        <div>
+                            <span class="fw-semibold">@enquiry.Name</span>
+                            <span class="text-muted">about</span>
+                            <a asp-controller="Listings" asp-action="Details" asp-route-id="@enquiry.PropertyId">@enquiry.PropertyName</a>
+                        </div>
+                        <span class="text-muted small">@enquiry.DateCreated.ToLocalTime().ToString("d MMM yyyy, HH:mm")</span>
+                    </div>
+                    <p class="mb-3" style="white-space: pre-line">@enquiry.Message</p>
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        @if (whatsApp is not null)
+                        {
+                            <a href="@whatsApp" class="btn btn-sm btn-success" target="_blank" rel="noopener">WhatsApp</a>
+                        }
+                        @if (call is not null)
+                        {
+                            <a href="@call" class="btn btn-sm btn-outline-primary">Call @enquiry.CellPhone</a>
+                        }
+                        else
+                        {
+                            <span class="small">@enquiry.CellPhone</span>
+                        }
+                        @if (enquiry.Email is not null)
+                        {
+                            <a href="mailto:@enquiry.Email" class="btn btn-sm btn-outline-secondary">Email @enquiry.Email</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

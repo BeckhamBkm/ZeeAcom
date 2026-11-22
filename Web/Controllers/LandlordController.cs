@@ -6,6 +6,7 @@ using ZeeAcom.Common;
 using ZeeAcom.Common.Entities;
 using ZeeAcom.Common.Models.OwnerModels;
 using ZeeAcom.Common.Models.PropertyModels;
+using ZeeAcom.Core.Enquiries.Queries;
 using ZeeAcom.Core.Owners.Queries;
 using ZeeAcom.Core.Properties.Commands;
 using ZeeAcom.Core.Properties.Queries;
@@ -36,12 +37,27 @@ public class LandlordController(IMediator mediator, UserManager<ApplicationUser>
         {
             Data = new SearchPropertyModel { OwnerId = owner.Id },
         }, cancellationToken);
+        var enquiries = await mediator.Send(new GetEnquiriesQuery { OwnerId = owner.Id }, cancellationToken);
 
         return View(new LandlordDashboardViewModel
         {
             Owner = owner,
             Properties = properties.Data ?? [],
+            EnquiryCount = enquiries.Count ?? 0,
         });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Enquiries(CancellationToken cancellationToken = default)
+    {
+        var owner = await GetCurrentOwner(cancellationToken);
+        if (owner is null)
+        {
+            return NoProfile();
+        }
+
+        var enquiries = await mediator.Send(new GetEnquiriesQuery { OwnerId = owner.Id }, cancellationToken);
+        return View(enquiries.Data ?? []);
     }
 
     [HttpGet]

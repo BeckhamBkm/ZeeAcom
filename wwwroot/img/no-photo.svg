@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360" role="img" aria-label="No photo">
+  <rect width="480" height="360" fill="#e9ecef"/>
+  <path d="M190 210l35-45 28 34 20-24 37 35H190z" fill="#adb5bd"/>
+  <circle cx="285" cy="150" r="14" fill="#adb5bd"/>
+  <text x="240" y="260" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" fill="#6c757d">No photo yet</text>
+</svg>

@@ -66,7 +66,7 @@ else
                 {
                     <tr>
                         <td><partial name="_CoverThumb" model="property" /></td>
-                        <td>@property.Name</td>
+                        <td>@if (property.Active) { <a asp-controller="Listings" asp-action="Details" asp-route-id="@property.Id" title="View public listing">@property.Name</a> } else { @property.Name }</td>
                         <td>@property.Address</td>
                         <td>@property.Suburb</td>
                         <td>

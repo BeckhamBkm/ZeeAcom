@@ -24,6 +24,8 @@ public partial class DatabaseContext : IdentityDbContext<ApplicationUser>
 
     public virtual DbSet<Picture> Pictures { get; set; }
 
+    public virtual DbSet<Enquiry> Enquiries { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Identity table mappings must be configured first.
@@ -65,6 +67,22 @@ public partial class DatabaseContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.ThumbnailUrl).HasMaxLength(400);
 
             entity.HasOne(d => d.Property).WithMany(p => p.Pictures).HasForeignKey(d => d.PropertyId);
+        });
+
+        modelBuilder.Entity<Enquiry>(entity =>
+        {
+            entity.ToTable("Enquiry");
+
+            entity.HasIndex(e => e.PropertyId, "IX_Enquiry_PropertyId");
+
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.CellPhone).HasMaxLength(30);
+            entity.Property(e => e.Email).HasMaxLength(200);
+            entity.Property(e => e.Message).HasMaxLength(1000);
+
+            // Enquiries go with their property.
+            entity.HasOne(d => d.Property).WithMany().HasForeignKey(d => d.PropertyId).OnDelete(DeleteBehavior.Cascade);
         });
 
         OnModelCreatingPartial(modelBuilder);

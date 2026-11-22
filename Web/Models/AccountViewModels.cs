@@ -23,4 +23,5 @@ public sealed class LandlordDashboardViewModel
 {
     public required OwnerModel Owner { get; set; }
     public IEnumerable<PropertyModel> Properties { get; set; } = [];
+    public int EnquiryCount { get; set; }
 }

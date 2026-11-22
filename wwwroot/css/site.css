@@ -30,3 +30,20 @@ html {
     aspect-ratio: 4 / 3;
     object-fit: cover;
 }
+
+/* Public listings */
+.listing-card .card-img-top {
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+.gallery-photo {
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+}
+
+.gallery-thumb {
+    width: 84px;
+    height: 63px;
+    object-fit: cover;
+}

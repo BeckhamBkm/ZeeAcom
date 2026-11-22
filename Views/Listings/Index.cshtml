@@ -1,0 +1,79 @@
+@model ListingsPageViewModel
+@using ZeeAcom.Common.Models.ListingModels
+@{
+    ViewData["Title"] = "Accommodation in Zeerust";
+    ViewData["Description"] = "Rooms, flats and houses to rent in Zeerust, listed by local landlords.";
+}
+
+<h1 class="h3 mb-3">Accommodation to rent in Zeerust</h1>
+
+<form method="get" asp-action="Index" class="row g-2 mb-4">
+    <div class="col-12 col-md-4">
+        <label class="visually-hidden" for="text">Search</label>
+        <input id="text" name="text" value="@Model.Text" class="form-control" placeholder="Search by name or street" />
+    </div>
+    <div class="col-6 col-md-2">
+        <label class="visually-hidden" for="suburb">Area</label>
+        <select id="suburb" name="suburb" class="form-select">
+            <option value="">All areas</option>
+            @foreach (var suburb in Model.Suburbs)
+            {
+                <option value="@suburb" selected="@(suburb == Model.Suburb)">@suburb</option>
+            }
+        </select>
+    </div>
+    <div class="col-6 col-md-2">
+        <label class="visually-hidden" for="maxRent">Max rent</label>
+        <select id="maxRent" name="maxRent" class="form-select">
+            <option value="">Any rent</option>
+            @foreach (var step in ListingsPageViewModel.RentSteps)
+            {
+                <option value="@step" selected="@(Model.MaxRent == step)">Up to @Currency.Rand(step)</option>
+            }
+        </select>
+    </div>
+    <div class="col-6 col-md-2">
+        <label class="visually-hidden" for="sort">Sort</label>
+        <select id="sort" name="sort" class="form-select">
+            <option value="@ListingSort.Newest" selected="@(Model.Sort == ListingSort.Newest)">Newest</option>
+            <option value="@ListingSort.RentLowToHigh" selected="@(Model.Sort == ListingSort.RentLowToHigh)">Rent: low to high</option>
+            <option value="@ListingSort.RentHighToLow" selected="@(Model.Sort == ListingSort.RentHighToLow)">Rent: high to low</option>
+        </select>
+    </div>
+    <div class="col-6 col-md-2 d-grid">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
+@if (!Model.Listings.Any())
+{
+    <div class="border rounded p-5 text-center text-muted">
+        <p class="mb-2">No properties match your search.</p>
+        <a asp-action="Index">See all listings</a>
+    </div>
+}
+else
+{
+    <p class="text-muted small">@Model.Total @(Model.Total == 1 ? "property" : "properties")</p>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4 mb-4">
+        @foreach (var listing in Model.Listings)
+        {
+            <div class="col"><partial name="_ListingCard" model="listing" /></div>
+        }
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Listing pages">
+            <ul class="pagination justify-content-center">
+                @for (var p = 1; p <= Model.TotalPages; p++)
+                {
+                    <li class="page-item @(p == Model.Page ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@p" asp-route-text="@Model.Text" asp-route-suburb="@Model.Suburb"
+                           asp-route-maxRent="@Model.MaxRent" asp-route-sort="@Model.Sort">@p</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+}

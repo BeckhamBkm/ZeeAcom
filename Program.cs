@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ZeeAcom.Common;
 using ZeeAcom.Common.Entities;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
@@ -38,6 +39,30 @@ builder.Services.AddLazyCache();
 
 // Property photos are stored on this server under wwwroot/uploads.
 builder.Services.AddSingleton<ZeeAcom.Core.Pictures.IPictureStorage, LocalPictureStorage>();
+
+// Enquiry emails to landlords (logged instead of sent until the "Smtp" settings are configured).
+builder.Services.AddSingleton<ZeeAcom.Core.Notifications.IEmailSender, SmtpEmailSender>();
+
+// The public enquiry form: at most 5 enquiries per visitor (IP address) every 10 minutes, to limit spam.
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.ContentType = "text/plain; charset=utf-8";
+        await context.HttpContext.Response.WriteAsync(
+            "You've sent several enquiries in a short time. Please wait a few minutes and try again, or contact the landlord on WhatsApp.",
+            cancellationToken);
+    };
+    options.AddPolicy(RateLimits.Enquiries, context =>
+        System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(10),
+            }));
+});
 
 // Logins: Admin and Landlord accounts stored in the same database (AspNetUsers etc.)
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -116,6 +141,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
