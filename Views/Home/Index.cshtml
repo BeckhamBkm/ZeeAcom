@@ -114,14 +114,8 @@
 
 @if (!User.IsInRole(Roles.Admin) && !User.IsInRole(Roles.Landlord))
 {
-    <section class="za-cta p-4 p-md-5 d-md-flex align-items-center justify-content-between gap-4">
-        <div class="d-flex gap-3 align-items-start mb-3 mb-md-0">
-            <span class="step-icon step-icon-sun flex-shrink-0"><i class="bi bi-key" aria-hidden="true"></i></span>
-            <div>
-                <h2 class="h4 mb-1">Got a room or house to rent out?</h2>
-                <p class="text-muted mb-0">List it on Zee Accom for free and get enquiries straight to your phone.</p>
-            </div>
-        </div>
-        <a class="btn btn-accent btn-lg text-nowrap" asp-controller="Account" asp-action="Register">List your place</a>
-    </section>
+    @* Kept low-key: the site is for renters. *@
+    <p class="text-center text-muted small mb-0">
+        Have a place to rent out in Zeerust? <a asp-controller="Account" asp-action="Register">Landlords can list for free</a>.
+    </p>
 }
