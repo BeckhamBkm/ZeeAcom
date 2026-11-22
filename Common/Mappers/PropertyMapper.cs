@@ -12,11 +12,13 @@ namespace ZeeAcom.Common.Mappers
         [MapperIgnoreTarget(nameof(Property.Owner))]
         [MapperIgnoreSource(nameof(PropertyModel.Owner))]
         [MapperIgnoreSource(nameof(PropertyModel.PhotoCount))]
+        [MapperIgnoreSource(nameof(PropertyModel.IsPublic))]
         [MapperIgnoreSource(nameof(PropertyModel.CoverThumbnailUrl))]
         public static partial Property Map(this PropertyModel model);
 
         [MapperIgnoreTarget(nameof(Property.Id))]
         [MapperIgnoreTarget(nameof(Property.Owner))]
+        [MapperIgnoreTarget(nameof(Property.HiddenByAdmin))]
         public static partial Property Map(this CreatePropertyModel model);
 
         [MapperIgnoreTarget(nameof(PropertyModel.PhotoCount))]

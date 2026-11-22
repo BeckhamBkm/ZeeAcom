@@ -8,6 +8,21 @@
     <a class="btn btn-primary" asp-action="AddProperty">Add property</a>
 </div>
 
+@if (Model.Owner.Status == OwnerStatus.Pending)
+{
+    <div class="alert alert-info" role="status">
+        <strong>Your account is waiting for approval.</strong>
+        You can add your properties and photos now. They'll show on the public site once Zee Accom has approved your account.
+    </div>
+}
+else if (Model.Owner.Status == OwnerStatus.Hidden)
+{
+    <div class="alert alert-warning" role="status">
+        <strong>Your listings are hidden from the public site.</strong>
+        Contact Zee Accom to find out why and to have them shown again.
+    </div>
+}
+
 <div class="row g-4">
     <div class="col-lg-4">
         <div class="card">
@@ -55,7 +70,7 @@
                         {
                             <tr>
                                 <td><partial name="_CoverThumb" model="property" /></td>
-                                <td>@if (property.Active) { <a asp-controller="Listings" asp-action="Details" asp-route-id="@property.Id" title="View public listing">@property.Name</a> } else { @property.Name }</td>
+                                <td>@if (property.IsPublic) { <a asp-controller="Listings" asp-action="Details" asp-route-id="@property.Id" title="View public listing">@property.Name</a> } else { @property.Name }</td>
                                 <td>@property.Address</td>
                                 <td>@property.Suburb</td>
                                 <td class="text-end text-nowrap">@(property.MonthlyRent is { } rent ? Currency.Rand(rent) : "—")</td>
@@ -67,6 +82,10 @@
                                     else
                                     {
                                         <span class="badge text-bg-secondary">Not available</span>
+                                    }
+                                    @if (property.HiddenByAdmin)
+                                    {
+                                        <span class="badge text-bg-danger" title="Contact Zee Accom to have it shown again">Hidden by Zee Accom</span>
                                     }
                                 </td>
                                 <td class="text-end text-nowrap">

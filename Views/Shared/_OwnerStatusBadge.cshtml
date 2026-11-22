@@ -1,0 +1,16 @@
+@model OwnerStatus
+@switch (Model)
+{
+    case OwnerStatus.Pending:
+        <span class="badge text-bg-warning">Waiting for approval</span>
+        break;
+    case OwnerStatus.Approved:
+        <span class="badge text-bg-success">Approved</span>
+        break;
+    case OwnerStatus.Hidden:
+        <span class="badge text-bg-secondary">Hidden</span>
+        break;
+    case OwnerStatus.Blocked:
+        <span class="badge text-bg-danger">Blocked</span>
+        break;
+}

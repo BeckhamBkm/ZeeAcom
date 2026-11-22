@@ -41,6 +41,7 @@ public class GetPropertiesQueryHandler(DatabaseContext databaseContext)
                 Address = e.Address,
                 Suburb = e.Suburb,
                 Active = e.Active,
+                HiddenByAdmin = e.HiddenByAdmin,
                 MonthlyRent = e.MonthlyRent,
                 DateCreated = e.DateCreated,
                 SessionId = e.SessionId,
@@ -52,6 +53,7 @@ public class GetPropertiesQueryHandler(DatabaseContext databaseContext)
                     LastName = e.Owner.LastName,
                     CellPhone = e.Owner.CellPhone,
                     Email = e.Owner.Email,
+                    Status = e.Owner.Status,
                 },
                 PhotoCount = e.Pictures.Count,
                 CoverThumbnailUrl = e.Pictures

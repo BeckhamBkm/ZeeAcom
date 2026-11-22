@@ -45,7 +45,9 @@ private readonly TimeSpan CacheExpiry = new(12, 0, 0);
         var entities = databaseContext.Owners.Select(x => x)
             .AsNoTracking()
             .FilterByFirstName(entity.FirstName)
-            .FilterByLastName(entity.LastName);
+            .FilterByLastName(entity.LastName)
+            .FilterByStatus(entity.Status)
+            .PendingFirst();
             //.OrderBy(entity.OrderBy);
 
 

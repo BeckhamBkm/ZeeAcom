@@ -6,6 +6,7 @@ using ZeeAcom.Common;
 using ZeeAcom.Common.Entities;
 using ZeeAcom.Common.Models.AccountModels;
 using ZeeAcom.Core.Accounts.Commands;
+using ZeeAcom.Core.Owners.Queries;
 using ZeeAcom.Web.Models;
 
 namespace ZeeAcom.Web.Controllers;
@@ -44,7 +45,8 @@ public class AccountController(
         }
 
         await signInManager.PasswordSignInAsync(model.Email.Trim(), model.Password, isPersistent: false, lockoutOnFailure: false);
-        TempData["Success"] = $"Welcome, {model.FirstName}! Your landlord account is ready.";
+        TempData["Success"] = $"Welcome, {model.FirstName}! Your landlord account is ready. You can add your properties now; " +
+                              "they'll show on the public site once Zee Accom has approved your account.";
         return RedirectToAction("Index", "Landlord");
     }
 
@@ -66,7 +68,9 @@ public class AccountController(
 
         if (result.IsLockedOut)
         {
-            ModelState.AddModelError(string.Empty, "Too many failed attempts. This account is locked for a few minutes; try again later.");
+            ModelState.AddModelError(string.Empty, await IsBlocked(email)
+                ? "This account has been blocked. Contact Zee Accom if you think this is a mistake."
+                : "Too many failed attempts. This account is locked for a few minutes; try again later.");
             return View(model);
         }
 
@@ -97,6 +101,17 @@ public class AccountController(
 
     [HttpGet]
     public IActionResult AccessDenied() => View();
+
+    private async Task<bool> IsBlocked(string email)
+    {
+        if (await userManager.FindByEmailAsync(email) is not { } user)
+        {
+            return false;
+        }
+
+        var owner = await mediator.Send(new GetOwnerByUserIdQuery { UserId = user.Id });
+        return owner.Data?.Status == OwnerStatus.Blocked;
+    }
 
     private IActionResult RedirectToHome()
         => User.IsInRole(Roles.Admin) ? RedirectToAction("Index", "Owners") : RedirectToAction("Index", "Landlord");

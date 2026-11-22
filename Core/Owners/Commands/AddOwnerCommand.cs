@@ -19,7 +19,10 @@ namespace ZeeAcom.Core.Owners.Commands
         public async Task<Result<OwnerModel>> Handle(AddOwnerCommand request, CancellationToken cancellationToken)
         {
             var owner = request.Data.Map();
-    
+
+            // Owners the admin adds don't need approving.
+            owner.Status = ZeeAcom.Common.Entities.OwnerStatus.Approved;
+
             if (owner.Properties != null)
             {
                 foreach (var property in owner.Properties)

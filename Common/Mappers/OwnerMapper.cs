@@ -15,6 +15,7 @@ public static partial class OwnerMapper
     public static partial Owner Map(this OwnerModel model);
 
     [MapperIgnoreTarget(nameof(Owner.Id))]
+    [MapperIgnoreTarget(nameof(Owner.Status))] // admin-added owners: set in AddOwnerCommand
     [MapperIgnoreTarget(nameof(Owner.UserId))]
     [MapperIgnoreTarget(nameof(Owner.User))]
     public static partial Owner Map(this CreateOwnerModel model);
@@ -40,6 +41,7 @@ public static partial class OwnerMapper
     [MapperIgnoreTarget(nameof(Property.Owner))]
     [MapperIgnoreSource(nameof(PropertyModel.Owner))]
     [MapperIgnoreSource(nameof(PropertyModel.PhotoCount))]
+    [MapperIgnoreSource(nameof(PropertyModel.IsPublic))]
     [MapperIgnoreSource(nameof(PropertyModel.CoverThumbnailUrl))]
     private static partial Property MapModelToProperty(PropertyModel property);
 
@@ -47,6 +49,7 @@ public static partial class OwnerMapper
     [MapperIgnoreTarget(nameof(Property.Owner))]
     [MapperIgnoreTarget(nameof(Property.OwnerId))]
     [MapperIgnoreSource(nameof(CreatePropertyModel.OwnerId))]
+    [MapperIgnoreTarget(nameof(Property.HiddenByAdmin))]
     private static partial Property MapNewProperty(CreatePropertyModel property);
 
     [MapperIgnoreTarget(nameof(Picture.Property))]

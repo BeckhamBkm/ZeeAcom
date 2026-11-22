@@ -35,6 +35,7 @@ public class GetPropertyByIdQueryHandler(DatabaseContext databaseContext)
                 Address = e.Address,
                 Suburb = e.Suburb,
                 Active = e.Active,
+                HiddenByAdmin = e.HiddenByAdmin,
                 MonthlyRent = e.MonthlyRent,
                 DateCreated = e.DateCreated,
                 SessionId = e.SessionId,
@@ -46,6 +47,7 @@ public class GetPropertyByIdQueryHandler(DatabaseContext databaseContext)
                     LastName = e.Owner.LastName,
                     CellPhone = e.Owner.CellPhone,
                     Email = e.Owner.Email,
+                    Status = e.Owner.Status,
                 },
                 Pictures = e.Pictures
                     .OrderBy(p => p.SortOrder).ThenBy(p => p.DateUploaded)

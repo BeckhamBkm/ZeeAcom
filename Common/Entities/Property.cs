@@ -13,7 +13,11 @@ public partial class Property
 
     public string Suburb { get; set; } = null!;
 
+    /// <summary>Set by the landlord: the property is available to rent.</summary>
     public bool Active { get; set; }
+
+    /// <summary>Set by the admin: kept off the public site whatever the landlord sets.</summary>
+    public bool HiddenByAdmin { get; set; }
 
     /// <summary>Monthly rent in rand. Null for older listings that don't have one yet.</summary>
     public decimal? MonthlyRent { get; set; }

@@ -6,11 +6,12 @@ namespace ZeeAcom.Core.Listings.Queries;
 public static class ListingFilter
 {
     /// <summary>
-    /// What the public may see. Every public query goes through this, so moderation rules
-    /// (e.g. hidden listings, unapproved or blocked landlords) only need adding here.
+    /// What the public may see. Every public query goes through this: the landlord has it marked
+    /// available, the admin hasn't hidden it, and the landlord is approved (not pending, hidden or blocked).
+    /// PropertyModel.IsPublic shows the same rule on the admin and landlord pages.
     /// </summary>
     public static IQueryable<Property> PubliclyVisible(this IQueryable<Property> query)
-        => query.Where(p => p.Active);
+        => query.Where(p => p.Active && !p.HiddenByAdmin && p.Owner.Status == OwnerStatus.Approved);
 
     public static IQueryable<Property> FilterByText(this IQueryable<Property> query, string? text)
         => string.IsNullOrWhiteSpace(text)

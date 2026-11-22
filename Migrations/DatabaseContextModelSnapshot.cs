@@ -280,10 +280,17 @@ namespace ZeeAcom.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Status");
 
                     b.HasIndex("UserId")
                         .IsUnique()
@@ -341,6 +348,9 @@ namespace ZeeAcom.Migrations
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("HiddenByAdmin")
+                        .HasColumnType("bit");
 
                     b.Property<decimal?>("MonthlyRent")
                         .HasPrecision(10, 2)

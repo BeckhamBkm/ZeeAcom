@@ -8,14 +8,31 @@
     <a class="btn btn-primary" asp-action="Create">Add owner</a>
 </div>
 
+@if (Model.PendingCount > 0 && Model.Status != OwnerStatus.Pending)
+{
+    <div class="alert alert-warning d-flex justify-content-between align-items-center" role="status">
+        <span>@Model.PendingCount @(Model.PendingCount == 1 ? "landlord is" : "landlords are") waiting for approval.</span>
+        <a asp-action="Index" asp-route-status="@OwnerStatus.Pending" class="btn btn-sm btn-warning">Review</a>
+    </div>
+}
+
 <form method="get" asp-action="Index" class="row g-2 mb-3">
-    <div class="col-sm-4">
+    <div class="col-sm-3">
         <input asp-for="FirstName" class="form-control" placeholder="First name" />
     </div>
-    <div class="col-sm-4">
+    <div class="col-sm-3">
         <input asp-for="LastName" class="form-control" placeholder="Last name" />
     </div>
-    <div class="col-sm-4 d-flex gap-2">
+    <div class="col-sm-3">
+        <select asp-for="Status" class="form-select" aria-label="Status">
+            <option value="">Any status</option>
+            <option value="@OwnerStatus.Pending">Waiting for approval</option>
+            <option value="@OwnerStatus.Approved">Approved</option>
+            <option value="@OwnerStatus.Hidden">Hidden</option>
+            <option value="@OwnerStatus.Blocked">Blocked</option>
+        </select>
+    </div>
+    <div class="col-sm-3 d-flex gap-2">
         <button type="submit" class="btn btn-outline-primary">Search</button>
         <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
     </div>
@@ -35,23 +52,62 @@ else
                     <th>Last name</th>
                     <th>Cell phone</th>
                     <th>Email</th>
+                    <th>Status</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var owner in Model.Owners)
                 {
+                    var name = $"{owner.FirstName} {owner.LastName}";
                     <tr>
                         <td>@owner.FirstName</td>
                         <td>@owner.LastName</td>
                         <td>@owner.CellPhone</td>
                         <td>@owner.Email</td>
+                        <td><partial name="_OwnerStatusBadge" model="owner.Status" /></td>
                         <td class="text-end text-nowrap">
                             <a class="btn btn-sm btn-outline-primary" asp-controller="Properties" asp-action="Index"
                                asp-route-ownerId="@owner.Id">Properties</a>
+
+                            @if (owner.Status == OwnerStatus.Pending)
+                            {
+                                <form method="post" asp-action="SetStatus" asp-route-id="@owner.Id" class="d-inline">
+                                    <input type="hidden" name="status" value="@OwnerStatus.Approved" />
+                                    <input type="hidden" name="filter" value="@Model.Status" />
+                                    <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                </form>
+                            }
+                            @if (owner.Status == OwnerStatus.Approved)
+                            {
+                                <form method="post" asp-action="SetStatus" asp-route-id="@owner.Id" class="d-inline"
+                                      onsubmit="return confirm('Hide all of @name\'s listings? They can still log in.');">
+                                    <input type="hidden" name="status" value="@OwnerStatus.Hidden" />
+                                    <input type="hidden" name="filter" value="@Model.Status" />
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Hide</button>
+                                </form>
+                            }
+                            @if (owner.Status is OwnerStatus.Hidden or OwnerStatus.Blocked)
+                            {
+                                <form method="post" asp-action="SetStatus" asp-route-id="@owner.Id" class="d-inline">
+                                    <input type="hidden" name="status" value="@OwnerStatus.Approved" />
+                                    <input type="hidden" name="filter" value="@Model.Status" />
+                                    <button type="submit" class="btn btn-sm btn-outline-success">@(owner.Status == OwnerStatus.Blocked ? "Unblock" : "Unhide")</button>
+                                </form>
+                            }
+                            @if (owner.Status != OwnerStatus.Blocked)
+                            {
+                                <form method="post" asp-action="SetStatus" asp-route-id="@owner.Id" class="d-inline"
+                                      onsubmit="return confirm('Block @name? They are logged out, can\'t log in, and their listings are hidden.');">
+                                    <input type="hidden" name="status" value="@OwnerStatus.Blocked" />
+                                    <input type="hidden" name="filter" value="@Model.Status" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Block</button>
+                                </form>
+                            }
+
                             <form method="post" asp-action="Delete" asp-route-id="@owner.Id" class="d-inline"
-                                  onsubmit="return confirm('Delete @owner.FirstName @owner.LastName and all of their properties?');">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                  onsubmit="return confirm('Delete @name, their login and all of their properties and photos? This can\'t be undone.');">
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                             </form>
                         </td>
                     </tr>
@@ -67,7 +123,7 @@ else
                 @for (var p = 1; p <= Model.TotalPages; p++)
                 {
                     <li class="page-item @(p == Model.Page ? "active" : "")">
-                        <a class="page-link" asp-action="Index" asp-route-page="@p"
+                        <a class="page-link" asp-action="Index" asp-route-page="@p" asp-route-status="@Model.Status"
                            asp-route-firstName="@Model.FirstName" asp-route-lastName="@Model.LastName">@p</a>
                     </li>
                 }
@@ -76,3 +132,10 @@ else
     }
     <p class="text-muted small">@Model.Total owner(s)</p>
 }
+
+<p class="text-muted small">
+    <strong>Approve</strong>: their available properties go public.
+    <strong>Hide</strong>: their listings come off the site, but they can still log in.
+    <strong>Block</strong>: logged out straight away, can't log in, listings hidden.
+    <strong>Delete</strong>: removes them, their login, properties and photos for good.
+</p>

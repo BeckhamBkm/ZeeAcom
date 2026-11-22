@@ -53,6 +53,10 @@ public partial class DatabaseContext : IdentityDbContext<ApplicationUser>
             // One owner profile per login. Deleting a user keeps the owner (and listings) but unlinks it.
             entity.HasIndex(e => e.UserId).IsUnique();
             entity.HasOne(e => e.User).WithOne().HasForeignKey<Owner>(e => e.UserId).OnDelete(DeleteBehavior.SetNull);
+
+            // Stored as text ("Pending", "Approved"...) so the table reads clearly.
+            entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(20);
+            entity.HasIndex(e => e.Status);
         });
 
         modelBuilder.Entity<Picture>(entity =>

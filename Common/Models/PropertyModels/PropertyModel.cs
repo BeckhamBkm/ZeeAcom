@@ -1,4 +1,5 @@
-﻿using ZeeAcom.Common.Models.OwnerModels;
+﻿using ZeeAcom.Common.Entities;
+using ZeeAcom.Common.Models.OwnerModels;
 using ZeeAcom.Common.Models.PictureModels;
 
 namespace ZeeAcom.Common.Models.PropertyModels;
@@ -10,6 +11,9 @@ public sealed class PropertyModel
     public string Address { get; set; } = string.Empty;
     public string Suburb { get; set; } = string.Empty;
     public bool Active { get; set; }
+
+    /// <summary>Set by the admin: kept off the public site whatever the landlord sets.</summary>
+    public bool HiddenByAdmin { get; set; }
 
     /// <summary>Monthly rent in rand (null for older listings without one).</summary>
     public decimal? MonthlyRent { get; set; }
@@ -30,4 +34,10 @@ public sealed class PropertyModel
 
     public Guid OwnerId { get; set; }
     public OwnerModel? Owner { get; set; }
+
+    /// <summary>
+    /// Whether the public can see it (needs Owner loaded). Mirrors ListingFilter.PubliclyVisible,
+    /// which is what the public pages actually use; keep the two in step.
+    /// </summary>
+    public bool IsPublic => Active && !HiddenByAdmin && Owner?.Status == OwnerStatus.Approved;
 }

@@ -23,5 +23,8 @@ public partial class Owner
 
     public virtual ApplicationUser? User { get; set; }
 
+    /// <summary>Set by the admin. New landlords start as Pending; only Approved landlords' listings are public.</summary>
+    public OwnerStatus Status { get; set; } = OwnerStatus.Pending;
+
     public virtual ICollection<Property> Properties { get; set; } = new List<Property>();
 }

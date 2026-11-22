@@ -130,6 +130,24 @@ public class PropertiesController(IMediator mediator) : Controller
         return RedirectToAction(nameof(Index), new { ownerId });
     }
 
+    /// <summary>Hide one listing from the public site, or show it again.</summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SetHidden(Guid id, bool hidden, Guid? ownerId, CancellationToken cancellationToken = default)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        var result = await mediator.Send(new SetPropertyHiddenCommand { Id = id, Hidden = hidden }, cancellationToken);
+        TempData[result.IsFailure ? "Error" : "Success"] = result.IsFailure
+            ? result.FirstError
+            : hidden ? "Listing hidden from the public site." : "Listing no longer hidden.";
+
+        return RedirectToAction(nameof(Index), new { ownerId });
+    }
+
     private async Task<IEnumerable<SelectListItem>> GetOwnerOptions(Guid? selected, CancellationToken cancellationToken)
     {
         var owners = await mediator.Send(new GetOwnersQuery { Data = new SearchOwnerModel() }, cancellationToken);

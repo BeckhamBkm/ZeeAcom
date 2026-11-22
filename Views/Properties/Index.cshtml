@@ -66,7 +66,7 @@ else
                 {
                     <tr>
                         <td><partial name="_CoverThumb" model="property" /></td>
-                        <td>@if (property.Active) { <a asp-controller="Listings" asp-action="Details" asp-route-id="@property.Id" title="View public listing">@property.Name</a> } else { @property.Name }</td>
+                        <td>@if (property.IsPublic) { <a asp-controller="Listings" asp-action="Details" asp-route-id="@property.Id" title="View public listing">@property.Name</a> } else { @property.Name }</td>
                         <td>@property.Address</td>
                         <td>@property.Suburb</td>
                         <td>
@@ -82,11 +82,23 @@ else
                             {
                                 <span class="badge text-bg-secondary">Inactive</span>
                             }
+                            @if (property.HiddenByAdmin)
+                            {
+                                <span class="badge text-bg-danger">Hidden by admin</span>
+                            }
+                            @if (property.Owner is { Status: not OwnerStatus.Approved } owner)
+                            {
+                                <span title="Owner status"><partial name="_OwnerStatusBadge" model="owner.Status" /></span>
+                            }
                         </td>
                         <td>@(property.DateCreated == default ? "—" : property.DateCreated.ToLocalTime().ToString("yyyy-MM-dd"))</td>
                         <td class="text-end text-nowrap">
                             <a class="btn btn-sm btn-primary" asp-controller="Photos" asp-action="Index" asp-route-propertyId="@property.Id">Photos (@property.PhotoCount)</a>
                             <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@property.Id">Edit</a>
+                            <form method="post" asp-action="SetHidden" asp-route-id="@property.Id" asp-route-ownerId="@Model.OwnerId" class="d-inline">
+                                <input type="hidden" name="hidden" value="@(property.HiddenByAdmin ? "false" : "true")" />
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">@(property.HiddenByAdmin ? "Unhide" : "Hide")</button>
+                            </form>
                             <form method="post" asp-action="Delete" asp-route-id="@property.Id" asp-route-ownerId="@Model.OwnerId"
                                   class="d-inline" onsubmit="return confirm('Delete this property and its photos?');">
                                 <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
