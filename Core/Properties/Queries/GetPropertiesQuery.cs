@@ -4,6 +4,7 @@ using ZeeAcom.Common.Extensions;
 using ZeeAcom.Common.Models;
 using ZeeAcom.Common.Models.PropertyModels;
 using ZeeAcom.Common.Models.OwnerModels;
+using ZeeAcom.Common.Models.RoomModels;
 using ZeeAcom.DataAccess;
 
 namespace ZeeAcom.Core.Properties.Queries;
@@ -52,7 +53,21 @@ public class GetPropertiesQueryHandler(DatabaseContext databaseContext)
                     CellPhone = e.Owner.CellPhone,
                     Email = e.Owner.Email,
                 },
+                Rooms = e.Rooms
+                    .OrderBy(r => r.Name)
+                    .Select(r => new RoomModel
+                    {
+                        Id = r.Id,
+                        Name = r.Name,
+                        MonthlyRent = r.MonthlyRent,
+                        Available = r.Available,
+                        Description = r.Description,
+                        DateCreated = r.DateCreated,
+                        PropertyId = r.PropertyId,
+                    })
+                    .ToList(),
             })
+            .AsSplitQuery()
             .ToListAsync(cancellationToken);
 
         return Result<IEnumerable<PropertyModel>>.Success(items, count);

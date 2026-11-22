@@ -314,6 +314,41 @@ namespace ZeeAcom.Migrations
                     b.ToTable("Property", (string)null);
                 });
 
+            modelBuilder.Entity("ZeeAcom.Common.Entities.Room", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Available")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<decimal>("MonthlyRent")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("PropertyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "PropertyId" }, "IX_Room_PropertyId");
+
+                    b.ToTable("Room", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -397,6 +432,17 @@ namespace ZeeAcom.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("ZeeAcom.Common.Entities.Room", b =>
+                {
+                    b.HasOne("ZeeAcom.Common.Entities.Property", "Property")
+                        .WithMany("Rooms")
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Property");
+                });
+
             modelBuilder.Entity("ZeeAcom.Common.Entities.Owner", b =>
                 {
                     b.Navigation("Properties");
@@ -405,6 +451,8 @@ namespace ZeeAcom.Migrations
             modelBuilder.Entity("ZeeAcom.Common.Entities.Property", b =>
                 {
                     b.Navigation("Pictures");
+
+                    b.Navigation("Rooms");
                 });
 #pragma warning restore 612, 618
         }

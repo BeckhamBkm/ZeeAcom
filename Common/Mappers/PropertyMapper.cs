@@ -2,6 +2,7 @@
 using ZeeAcom.Common.Entities;
 using ZeeAcom.Common.Models.OwnerModels;
 using ZeeAcom.Common.Models.PropertyModels;
+using ZeeAcom.Common.Models.RoomModels;
 
 namespace ZeeAcom.Common.Mappers
 {
@@ -14,6 +15,7 @@ namespace ZeeAcom.Common.Mappers
 
         [MapperIgnoreTarget(nameof(Property.Id))]
         [MapperIgnoreTarget(nameof(Property.Owner))]
+        [MapperIgnoreTarget(nameof(Property.Rooms))]
         public static partial Property Map(this CreatePropertyModel model);
 
         public static partial PropertyModel Map(this Property property);
@@ -37,5 +39,12 @@ namespace ZeeAcom.Common.Mappers
 
         [MapperIgnoreSource(nameof(Picture.Property))]
         private static partial PictureModel MapPictureModel(Picture picture);
+
+        // Nested mappings for PropertyModel.Rooms (each room's Property back-reference is skipped).
+        [MapperIgnoreSource(nameof(Room.Property))]
+        private static partial RoomModel MapRoomModel(Room room);
+
+        [MapperIgnoreTarget(nameof(Room.Property))]
+        private static partial Room MapRoom(RoomModel room);
     }
 }

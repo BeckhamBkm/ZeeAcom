@@ -24,4 +24,6 @@ public partial class Property
     public virtual Owner Owner { get; set; } = null!;
 
     public virtual ICollection<Picture> Pictures { get; set; } = new List<Picture>();
+
+    public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
 }

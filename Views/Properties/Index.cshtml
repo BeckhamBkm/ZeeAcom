@@ -54,6 +54,7 @@ else
                     <th>Address</th>
                     <th>Suburb</th>
                     <th>Owner</th>
+                    <th>Rooms</th>
                     <th>Status</th>
                     <th>Added</th>
                     <th></th>
@@ -69,6 +70,7 @@ else
                         <td>
                             <a asp-action="Index" asp-route-ownerId="@property.OwnerId">@property.Owner?.FirstName @property.Owner?.LastName</a>
                         </td>
+                        <td><partial name="_RoomsSummary" model="property" /></td>
                         <td>
                             @if (property.Active)
                             {
@@ -81,9 +83,10 @@ else
                         </td>
                         <td>@(property.DateCreated == default ? "—" : property.DateCreated.ToLocalTime().ToString("yyyy-MM-dd"))</td>
                         <td class="text-end text-nowrap">
+                            <a class="btn btn-sm btn-primary" asp-controller="Rooms" asp-action="Index" asp-route-propertyId="@property.Id">Rooms</a>
                             <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@property.Id">Edit</a>
                             <form method="post" asp-action="Delete" asp-route-id="@property.Id" asp-route-ownerId="@Model.OwnerId"
-                                  class="d-inline" onsubmit="return confirm('Delete this property?');">
+                                  class="d-inline" onsubmit="return confirm('Delete this property and its rooms?');">
                                 <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                             </form>
                         </td>

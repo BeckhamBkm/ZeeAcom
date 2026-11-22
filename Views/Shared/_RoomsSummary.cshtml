@@ -1,0 +1,20 @@
+@model ZeeAcom.Common.Models.PropertyModels.PropertyModel
+@* "3 rooms · 2 available · from R2 500" for a property row. *@
+@{
+    var rooms = Model.Rooms;
+    var available = rooms.Where(r => r.Available).ToList();
+}
+@if (!rooms.Any())
+{
+    <span class="text-muted small">No rooms yet</span>
+}
+else
+{
+    <span class="small">
+        @rooms.Count @(rooms.Count == 1 ? "room" : "rooms") · @available.Count available
+        @if (available.Any())
+        {
+            <span class="text-nowrap">· from @Currency.Rand(available.Min(r => r.MonthlyRent))</span>
+        }
+    </span>
+}

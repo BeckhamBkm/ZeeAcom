@@ -2,6 +2,7 @@
 using ZeeAcom.Common.Entities;
 using ZeeAcom.Common.Models.OwnerModels;
 using ZeeAcom.Common.Models.PropertyModels;
+using ZeeAcom.Common.Models.RoomModels;
 
 namespace ZeeAcom.Common.Mappers;
 
@@ -41,8 +42,15 @@ public static partial class OwnerMapper
     [MapperIgnoreTarget(nameof(Property.Id))]
     [MapperIgnoreTarget(nameof(Property.Owner))]
     [MapperIgnoreTarget(nameof(Property.OwnerId))]
+    [MapperIgnoreTarget(nameof(Property.Rooms))]
     [MapperIgnoreSource(nameof(CreatePropertyModel.OwnerId))]
     private static partial Property MapNewProperty(CreatePropertyModel property);
+
+    [MapperIgnoreSource(nameof(Room.Property))]
+    private static partial RoomModel MapRoomModel(Room room);
+
+    [MapperIgnoreTarget(nameof(Room.Property))]
+    private static partial Room MapRoom(RoomModel room);
 
     [MapperIgnoreTarget(nameof(Picture.Property))]
     private static partial Picture MapPicture(PictureModel picture);
