@@ -88,6 +88,38 @@ public class PropertiesController(IMediator mediator) : Controller
         return RedirectToAction(nameof(Index), new { ownerId = model.OwnerId });
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Edit(Guid id, CancellationToken cancellationToken = default)
+    {
+        var property = await mediator.Send(new GetPropertyByIdQuery { Id = id }, cancellationToken);
+        if (property.IsFailure || property.Data is null)
+        {
+            return NotFound();
+        }
+
+        return View(PropertyFormViewModel.From(property.Data));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Guid id, PropertyFormViewModel model, CancellationToken cancellationToken = default)
+    {
+        model.Id = id;
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var result = await mediator.Send(new UpdatePropertyCommand { Id = id, Data = model.ToUpdateModel() }, cancellationToken);
+        if (result.IsFailure || result.Data is null)
+        {
+            return NotFound();
+        }
+
+        TempData["Success"] = $"{model.Name} was updated.";
+        return RedirectToAction(nameof(Index), new { ownerId = result.Data.OwnerId });
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(Guid id, Guid? ownerId, CancellationToken cancellationToken = default)

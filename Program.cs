@@ -11,11 +11,11 @@ using ZeeAcom.DataAccess;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
 
-if (builder.Environment.IsDevelopment())
+// Development + LocalDB: connect through the instance's named pipe (see LocalDbConnection for why).
+var localDbInstance = builder.Environment.IsDevelopment() ? LocalDbConnection.GetInstanceName(connectionString) : null;
+if (localDbInstance is not null)
 {
-    // Connect to LocalDB through its named pipe (see LocalDbConnection for why).
-    using var startupLogging = LoggerFactory.Create(logging => logging.AddConsole());
-    connectionString = LocalDbConnection.Resolve(connectionString, startupLogging.CreateLogger("LocalDb"));
+    builder.Services.AddSingleton(sp => new LocalDbConnection(localDbInstance, sp.GetRequiredService<ILogger<LocalDbConnection>>()));
 }
 
 // Add services to the container.
@@ -26,8 +26,14 @@ builder.Services.AddControllersWithViews(options => options.SuppressImplicitRequ
             .AddNewtonsoftJson(x => x.SerializerSettings.ContractResolver = new DefaultContractResolver())
             .AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
-builder.Services.AddDbContext<DatabaseContext>(options =>
-    options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<DatabaseContext>((services, options) =>
+{
+    options.UseSqlServer(connectionString);
+    if (localDbInstance is not null)
+    {
+        options.AddInterceptors(services.GetRequiredService<LocalDbConnection>());
+    }
+});
 builder.Services.AddLazyCache();
 
 // Logins: Admin and Landlord accounts stored in the same database (AspNetUsers etc.)

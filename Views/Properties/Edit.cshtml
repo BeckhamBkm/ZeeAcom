@@ -1,0 +1,20 @@
+@model PropertyFormViewModel
+@{
+    ViewData["Title"] = $"Edit {Model.Name}";
+}
+
+<h1 class="h3 mb-1">Edit property</h1>
+@if (Model.OwnerName is not null)
+{
+    <p class="text-muted mb-3">Owner: @Model.OwnerName</p>
+}
+
+<form method="post" asp-action="Edit" asp-route-id="@Model.Id" class="col-lg-6">
+    <input type="hidden" asp-for="OwnerName" />
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+    <partial name="_PropertyFields" model="Model" />
+
+    <button type="submit" class="btn btn-primary">Save changes</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+</form>

@@ -17,6 +17,13 @@ namespace ZeeAcom.Api.Controllers
         public async Task<ActionResult<Result<IEnumerable<PropertyModel>>>> Search([FromBody] SearchPropertyModel model, CancellationToken cancellationToken = default)
             => ResponseHelper.ResponseOutcome(await this.Mediator.Send(new GetPropertiesQuery { Data = model }, cancellationToken), this);
 
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(Result<PropertyModel>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<Result<PropertyModel>>> Update(Guid id, [FromBody] UpdatePropertyModel model, CancellationToken cancellationToken = default)
+            => ResponseHelper.ResponseOutcome(await this.Mediator.Send(new UpdatePropertyCommand { Id = id, Data = model }, cancellationToken), this);
+
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(Result), 200)]
         [ProducesResponseType(400)]

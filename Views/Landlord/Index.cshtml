@@ -5,6 +5,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Hi, @Model.Owner.FirstName</h1>
+    <a class="btn btn-primary" asp-action="AddProperty">Add property</a>
 </div>
 
 <div class="row g-4">
@@ -23,7 +24,10 @@
         <h2 class="h5">My properties</h2>
         @if (!Model.Properties.Any())
         {
-            <p class="text-muted">You haven't listed any properties yet.</p>
+            <div class="border rounded p-4 text-center text-muted">
+                <p class="mb-3">You haven't listed any properties yet.</p>
+                <a class="btn btn-outline-primary" asp-action="AddProperty">Add your first property</a>
+            </div>
         }
         else
         {
@@ -35,6 +39,7 @@
                             <th>Address</th>
                             <th>Suburb</th>
                             <th>Status</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -47,12 +52,19 @@
                                 <td>
                                     @if (property.Active)
                                     {
-                                        <span class="badge text-bg-success">Active</span>
+                                        <span class="badge text-bg-success">Available</span>
                                     }
                                     else
                                     {
-                                        <span class="badge text-bg-secondary">Inactive</span>
+                                        <span class="badge text-bg-secondary">Not available</span>
                                     }
+                                </td>
+                                <td class="text-end text-nowrap">
+                                    <a class="btn btn-sm btn-outline-primary" asp-action="EditProperty" asp-route-id="@property.Id">Edit</a>
+                                    <form method="post" asp-action="DeleteProperty" asp-route-id="@property.Id" class="d-inline"
+                                          onsubmit="return confirm('Delete this property? This can\'t be undone.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
                                 </td>
                             </tr>
                         }
@@ -60,6 +72,6 @@
                 </table>
             </div>
         }
-        <p class="text-muted small">Adding and editing your own properties and rooms is coming next.</p>
+        <p class="text-muted small">Rooms and photos for each property are coming next.</p>
     </div>
 </div>
