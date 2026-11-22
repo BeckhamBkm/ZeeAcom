@@ -17,4 +17,8 @@ public sealed class UpdatePropertyModel
     public string Suburb { get; set; } = string.Empty;
 
     public bool Active { get; set; }
+
+    /// <summary>Monthly rent in rand.</summary>
+    [Range(0, 1_000_000, ErrorMessage = "Enter a monthly rent between R0 and R1 000 000.")]
+    public decimal? MonthlyRent { get; set; }
 }

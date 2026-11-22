@@ -15,6 +15,9 @@ public partial class Property
 
     public bool Active { get; set; }
 
+    /// <summary>Monthly rent in rand. Null for older listings that don't have one yet.</summary>
+    public decimal? MonthlyRent { get; set; }
+
     public DateTime DateCreated { get; set; }
 
     public Guid SessionId { get; set; }
@@ -24,6 +27,4 @@ public partial class Property
     public virtual Owner Owner { get; set; } = null!;
 
     public virtual ICollection<Picture> Pictures { get; set; } = new List<Picture>();
-
-    public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
 }

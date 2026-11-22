@@ -43,6 +43,11 @@ public sealed class PropertyFormViewModel
 
     public bool Active { get; set; } = true;
 
+    [Required(ErrorMessage = "Enter the monthly rent.")]
+    [Range(0, 1_000_000, ErrorMessage = "Enter a monthly rent between R0 and R1 000 000.")]
+    [Display(Name = "Monthly rent (R)")]
+    public decimal? MonthlyRent { get; set; }
+
     /// <summary>Shown read-only on the admin edit page.</summary>
     [ValidateNever]
     public string? OwnerName { get; set; }
@@ -54,6 +59,7 @@ public sealed class PropertyFormViewModel
         Address = property.Address,
         Suburb = property.Suburb,
         Active = property.Active,
+        MonthlyRent = property.MonthlyRent,
         OwnerName = property.Owner is null ? null : $"{property.Owner.FirstName} {property.Owner.LastName}",
     };
 
@@ -63,6 +69,7 @@ public sealed class PropertyFormViewModel
         Address = Address.Trim(),
         Suburb = Suburb.Trim(),
         Active = Active,
+        MonthlyRent = MonthlyRent,
         OwnerId = ownerId,
     };
 
@@ -72,6 +79,7 @@ public sealed class PropertyFormViewModel
         Address = Address,
         Suburb = Suburb,
         Active = Active,
+        MonthlyRent = MonthlyRent,
     };
 }
 
@@ -88,6 +96,11 @@ public sealed class PropertyCreateViewModel
 
     public bool Active { get; set; } = true;
 
+    [Required(ErrorMessage = "Enter the monthly rent.")]
+    [Range(0, 1_000_000, ErrorMessage = "Enter a monthly rent between R0 and R1 000 000.")]
+    [Display(Name = "Monthly rent (R)")]
+    public decimal? MonthlyRent { get; set; }
+
     [Required(ErrorMessage = "Choose an owner.")]
     [Display(Name = "Owner")]
     public Guid? OwnerId { get; set; }
@@ -101,6 +114,7 @@ public sealed class PropertyCreateViewModel
         Address = Address.Trim(),
         Suburb = Suburb.Trim(),
         Active = Active,
+        MonthlyRent = MonthlyRent,
         OwnerId = OwnerId!.Value,
     };
 }

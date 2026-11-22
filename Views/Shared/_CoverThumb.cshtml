@@ -1,0 +1,13 @@
+@model ZeeAcom.Common.Models.PropertyModels.PropertyModel
+@* Small cover photo for a property row (or a placeholder), linking to its photos. *@
+<a asp-controller="Photos" asp-action="Index" asp-route-propertyId="@Model.Id" class="d-inline-block text-decoration-none"
+   title="@(Model.PhotoCount == 1 ? "1 photo" : $"{Model.PhotoCount} photos")">
+    @if (Model.CoverThumbnailUrl is not null)
+    {
+        <img src="@Model.CoverThumbnailUrl" alt="" class="rounded cover-thumb" loading="lazy" />
+    }
+    else
+    {
+        <span class="rounded cover-thumb cover-thumb-empty">No photo</span>
+    }
+</a>

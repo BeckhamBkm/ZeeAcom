@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ZeeAcom.Common.Models;
 using ZeeAcom.Common.Models.OwnerModels;
+using ZeeAcom.Common.Models.PictureModels;
 using ZeeAcom.Common.Models.PropertyModels;
 using ZeeAcom.DataAccess;
 
@@ -34,6 +35,7 @@ public class GetPropertyByIdQueryHandler(DatabaseContext databaseContext)
                 Address = e.Address,
                 Suburb = e.Suburb,
                 Active = e.Active,
+                MonthlyRent = e.MonthlyRent,
                 DateCreated = e.DateCreated,
                 SessionId = e.SessionId,
                 OwnerId = e.OwnerId,
@@ -45,8 +47,27 @@ public class GetPropertyByIdQueryHandler(DatabaseContext databaseContext)
                     CellPhone = e.Owner.CellPhone,
                     Email = e.Owner.Email,
                 },
+                Pictures = e.Pictures
+                    .OrderBy(p => p.SortOrder).ThenBy(p => p.DateUploaded)
+                    .Select(p => new PictureModel
+                    {
+                        Id = p.Id,
+                        Url = p.Url,
+                        ThumbnailUrl = p.ThumbnailUrl,
+                        Caption = p.Caption,
+                        SortOrder = p.SortOrder,
+                        DateUploaded = p.DateUploaded,
+                        PropertyId = p.PropertyId,
+                    })
+                    .ToList(),
             })
             .FirstOrDefaultAsync(cancellationToken);
+
+        if (property is not null)
+        {
+            property.PhotoCount = property.Pictures.Count;
+            property.CoverThumbnailUrl = property.Pictures.Select(p => p.ThumbnailUrl ?? p.Url).FirstOrDefault();
+        }
 
         return property is null
             ? Result<PropertyModel>.Failure("Property not found")

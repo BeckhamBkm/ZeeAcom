@@ -41,6 +41,7 @@ public class UpdatePropertyCommandHandler(DatabaseContext databaseContext)
         property.Address = data.Address.Trim();
         property.Suburb = data.Suburb.Trim();
         property.Active = data.Active;
+        property.MonthlyRent = data.MonthlyRent;
 
         if (databaseContext.ChangeTracker.HasChanges())
         {

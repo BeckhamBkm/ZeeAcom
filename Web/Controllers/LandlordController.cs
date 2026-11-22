@@ -71,8 +71,11 @@ public class LandlordController(IMediator mediator, UserManager<ApplicationUser>
             return View(PropertyForm, model);
         }
 
-        TempData["Success"] = $"{model.Name} was added.";
-        return RedirectToAction(nameof(Index));
+        // Straight on to adding photos.
+        TempData["Success"] = $"{model.Name} was added. Now add some photos.";
+        return result.Data is null
+            ? RedirectToAction(nameof(Index))
+            : RedirectToAction("Index", "Photos", new { propertyId = result.Data.Id });
     }
 
     [HttpGet]

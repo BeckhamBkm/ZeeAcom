@@ -7,3 +7,26 @@ html {
         font-size: 16px;
     }
 }
+
+/* Property cover photo in lists */
+.cover-thumb {
+    width: 64px;
+    height: 48px;
+    object-fit: cover;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cover-thumb-empty {
+    background: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+    font-size: .65rem;
+}
+
+/* Photos page grid */
+.photo-tile img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}

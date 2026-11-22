@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ZeeAcom.Common.Models.PictureModels;
 
 namespace ZeeAcom.Common.Models.PropertyModels
 {
@@ -13,6 +14,11 @@ namespace ZeeAcom.Common.Models.PropertyModels
         [Required, StringLength(100)]
         public string Suburb { get; set; } = string.Empty;
         public bool Active { get; set; }
+
+        /// <summary>Monthly rent in rand.</summary>
+        [Range(0, 1_000_000, ErrorMessage = "Enter a monthly rent between R0 and R1 000 000.")]
+        public decimal? MonthlyRent { get; set; }
+
         public DateTime DateCreated { get; set; }
         public Guid SessionId { get; set; }
 

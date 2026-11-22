@@ -38,6 +38,14 @@ else
             <input asp-for="Suburb" class="form-control" />
             <span asp-validation-for="Suburb" class="text-danger small"></span>
         </div>
+        <div class="mb-3">
+            <label asp-for="MonthlyRent" class="form-label">Monthly rent</label>
+            <div class="input-group">
+                <span class="input-group-text">R</span>
+                <input asp-for="MonthlyRent" type="number" min="0" step="0.01" class="form-control" />
+            </div>
+            <span asp-validation-for="MonthlyRent" class="text-danger small"></span>
+        </div>
         <div class="form-check mb-3">
             <input asp-for="Active" class="form-check-input" />
             <label asp-for="Active" class="form-check-label">Active (available to list)</label>

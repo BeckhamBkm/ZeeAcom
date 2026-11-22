@@ -1,8 +1,10 @@
 ﻿using LazyCache;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using ZeeAcom.Common.Entities;
 using ZeeAcom.Common.Models;
+using ZeeAcom.Core.Pictures;
 using ZeeAcom.DataAccess;
 
 namespace ZeeAcom.Core.Owners.Commands;
@@ -12,7 +14,7 @@ public class DeleteOwnerCommand : IRequest<Result>
     public required Guid Id { get; set; }
 }
 
-public class DeleteOwnerCommandHandler(DatabaseContext databaseContext, UserManager<ApplicationUser> userManager, IAppCache cache) : IRequestHandler<DeleteOwnerCommand,Result>
+public class DeleteOwnerCommandHandler(DatabaseContext databaseContext, UserManager<ApplicationUser> userManager, IPictureStorage storage, IAppCache cache) : IRequestHandler<DeleteOwnerCommand,Result>
 {
     private const string Error = "Error deleteing an owner record";
     public async Task<Result> Handle(DeleteOwnerCommand request,CancellationToken cancellationToken)
@@ -21,6 +23,12 @@ public class DeleteOwnerCommandHandler(DatabaseContext databaseContext, UserMana
 
         if(owner is not null)
         {
+            // Properties and their picture rows are removed by cascade; remember them to delete the photo files after.
+            var propertyIds = await databaseContext.Properties
+                .Where(p => p.OwnerId == owner.Id)
+                .Select(p => p.Id)
+                .ToListAsync(cancellationToken);
+
             await using var transaction = await databaseContext.Database.BeginTransactionAsync(cancellationToken);
 
             databaseContext.Owners.Remove(owner);
@@ -41,6 +49,11 @@ public class DeleteOwnerCommandHandler(DatabaseContext databaseContext, UserMana
             }
 
             await transaction.CommitAsync(cancellationToken);
+
+            foreach (var propertyId in propertyIds)
+            {
+                storage.DeleteAllForProperty(propertyId);
+            }
 
             //cache.Remove();
             return Result.Success();

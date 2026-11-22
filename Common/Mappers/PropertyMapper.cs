@@ -1,8 +1,8 @@
 ﻿using Riok.Mapperly.Abstractions;
 using ZeeAcom.Common.Entities;
 using ZeeAcom.Common.Models.OwnerModels;
+using ZeeAcom.Common.Models.PictureModels;
 using ZeeAcom.Common.Models.PropertyModels;
-using ZeeAcom.Common.Models.RoomModels;
 
 namespace ZeeAcom.Common.Mappers
 {
@@ -11,13 +11,16 @@ namespace ZeeAcom.Common.Mappers
     {
         [MapperIgnoreTarget(nameof(Property.Owner))]
         [MapperIgnoreSource(nameof(PropertyModel.Owner))]
+        [MapperIgnoreSource(nameof(PropertyModel.PhotoCount))]
+        [MapperIgnoreSource(nameof(PropertyModel.CoverThumbnailUrl))]
         public static partial Property Map(this PropertyModel model);
 
         [MapperIgnoreTarget(nameof(Property.Id))]
         [MapperIgnoreTarget(nameof(Property.Owner))]
-        [MapperIgnoreTarget(nameof(Property.Rooms))]
         public static partial Property Map(this CreatePropertyModel model);
 
+        [MapperIgnoreTarget(nameof(PropertyModel.PhotoCount))]
+        [MapperIgnoreTarget(nameof(PropertyModel.CoverThumbnailUrl))]
         public static partial PropertyModel Map(this Property property);
 
         public static IEnumerable<PropertyModel> Map(this List<Property> properties)
@@ -40,11 +43,5 @@ namespace ZeeAcom.Common.Mappers
         [MapperIgnoreSource(nameof(Picture.Property))]
         private static partial PictureModel MapPictureModel(Picture picture);
 
-        // Nested mappings for PropertyModel.Rooms (each room's Property back-reference is skipped).
-        [MapperIgnoreSource(nameof(Room.Property))]
-        private static partial RoomModel MapRoomModel(Room room);
-
-        [MapperIgnoreTarget(nameof(Room.Property))]
-        private static partial Room MapRoom(RoomModel room);
     }
 }

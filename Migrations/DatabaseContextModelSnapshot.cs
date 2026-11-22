@@ -260,11 +260,22 @@ namespace ZeeAcom.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Caption")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<DateTime>("DateUploaded")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("PropertyId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ThumbnailUrl")
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -293,6 +304,10 @@ namespace ZeeAcom.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal?>("MonthlyRent")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -312,41 +327,6 @@ namespace ZeeAcom.Migrations
                     b.HasIndex(new[] { "OwnerId" }, "IX_Property_OwnerId");
 
                     b.ToTable("Property", (string)null);
-                });
-
-            modelBuilder.Entity("ZeeAcom.Common.Entities.Room", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("Available")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<decimal>("MonthlyRent")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid>("PropertyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex(new[] { "PropertyId" }, "IX_Room_PropertyId");
-
-                    b.ToTable("Room", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -432,17 +412,6 @@ namespace ZeeAcom.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("ZeeAcom.Common.Entities.Room", b =>
-                {
-                    b.HasOne("ZeeAcom.Common.Entities.Property", "Property")
-                        .WithMany("Rooms")
-                        .HasForeignKey("PropertyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Property");
-                });
-
             modelBuilder.Entity("ZeeAcom.Common.Entities.Owner", b =>
                 {
                     b.Navigation("Properties");
@@ -451,8 +420,6 @@ namespace ZeeAcom.Migrations
             modelBuilder.Entity("ZeeAcom.Common.Entities.Property", b =>
                 {
                     b.Navigation("Pictures");
-
-                    b.Navigation("Rooms");
                 });
 #pragma warning restore 612, 618
         }

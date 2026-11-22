@@ -1,0 +1,121 @@
+@model PhotosPageViewModel
+@using ZeeAcom.Core.Pictures.Commands
+@{
+    ViewData["Title"] = $"Photos - {Model.Property.Name}";
+    var pictures = Model.Property.Pictures.ToList();
+    var spaceLeft = UploadPicturesCommand.MaxPhotosPerProperty - pictures.Count;
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        @if (Model.IsAdmin)
+        {
+            <li class="breadcrumb-item"><a asp-controller="Properties" asp-action="Index" asp-route-ownerId="@Model.Property.OwnerId">Properties</a></li>
+        }
+        else
+        {
+            <li class="breadcrumb-item"><a asp-controller="Landlord" asp-action="Index">My listings</a></li>
+        }
+        <li class="breadcrumb-item active" aria-current="page">@Model.Property.Name</li>
+    </ol>
+</nav>
+
+<div class="mb-3">
+    <h1 class="h3 mb-1">Photos of @Model.Property.Name</h1>
+    <p class="text-muted mb-0">
+        @Model.Property.Address, @Model.Property.Suburb
+        @if (Model.Property.MonthlyRent is { } rent)
+        {
+            <span> · @Currency.Rand(rent) / month</span>
+        }
+        @if (Model.IsAdmin && Model.Property.Owner is not null)
+        {
+            <span> · Owner: @Model.Property.Owner.FirstName @Model.Property.Owner.LastName</span>
+        }
+    </p>
+</div>
+
+@if (Model.UploadErrors.Any())
+{
+    <div class="alert alert-warning" role="alert">
+        <p class="mb-1 fw-semibold">Some files weren't added:</p>
+        <ul class="mb-0">
+            @foreach (var error in Model.UploadErrors)
+            {
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        @if (spaceLeft > 0)
+        {
+            <form method="post" asp-action="Upload" asp-route-propertyId="@Model.Property.Id" enctype="multipart/form-data"
+                  class="row g-2 align-items-end">
+                <div class="col-md">
+                    <label for="files" class="form-label">Add photos</label>
+                    <input id="files" name="files" type="file" class="form-control" multiple required
+                           accept="image/jpeg,image/png,image/webp" />
+                    <div class="form-text">
+                        Outside, each room, kitchen and bathroom. JPG, PNG or WebP, up to 10 MB each,
+                        @UploadPicturesCommand.MaxFilesPerUpload at a time. @spaceLeft of @UploadPicturesCommand.MaxPhotosPerProperty photos left.
+                    </div>
+                </div>
+                <div class="col-md-auto">
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
+            </form>
+        }
+        else
+        {
+            <p class="mb-0 text-muted">This property has the maximum of @UploadPicturesCommand.MaxPhotosPerProperty photos. Delete one to add another.</p>
+        }
+    </div>
+</div>
+
+@if (!pictures.Any())
+{
+    <div class="border rounded p-4 text-center text-muted">
+        No photos yet. Listings with good photos get far more enquiries.
+    </div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+        @for (var i = 0; i < pictures.Count; i++)
+        {
+            var picture = pictures[i];
+            <div class="col">
+                <div class="card h-100 photo-tile">
+                    <a href="@picture.Url" target="_blank" rel="noopener">
+                        <img src="@(picture.ThumbnailUrl ?? picture.Url)" alt="@(picture.Caption ?? Model.Property.Name)" class="card-img-top" loading="lazy" />
+                    </a>
+                    <div class="card-body">
+                        @if (i == 0)
+                        {
+                            <span class="badge text-bg-primary mb-2">Cover photo</span>
+                        }
+                        <form method="post" asp-action="Caption" asp-route-propertyId="@Model.Property.Id" asp-route-id="@picture.Id" class="input-group input-group-sm mb-2">
+                            <input name="caption" value="@picture.Caption" maxlength="100" class="form-control" placeholder="Caption, e.g. Main bedroom" aria-label="Caption" />
+                            <button type="submit" class="btn btn-outline-secondary">Save</button>
+                        </form>
+                        <div class="d-flex gap-2">
+                            @if (i > 0)
+                            {
+                                <form method="post" asp-action="Cover" asp-route-propertyId="@Model.Property.Id" asp-route-id="@picture.Id">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Make cover</button>
+                                </form>
+                            }
+                            <form method="post" asp-action="Delete" asp-route-propertyId="@Model.Property.Id" asp-route-id="@picture.Id"
+                                  onsubmit="return confirm('Delete this photo?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

@@ -416,3 +416,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Photos uploaded through the site (stored on the server, not in git)
+wwwroot/uploads/

@@ -35,10 +35,11 @@
                 <table class="table table-striped align-middle">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Name</th>
                             <th>Address</th>
                             <th>Suburb</th>
-                            <th>Rooms</th>
+                            <th class="text-end">Rent / month</th>
                             <th>Status</th>
                             <th></th>
                         </tr>
@@ -47,10 +48,11 @@
                         @foreach (var property in Model.Properties)
                         {
                             <tr>
+                                <td><partial name="_CoverThumb" model="property" /></td>
                                 <td>@property.Name</td>
                                 <td>@property.Address</td>
                                 <td>@property.Suburb</td>
-                                <td><partial name="_RoomsSummary" model="property" /></td>
+                                <td class="text-end text-nowrap">@(property.MonthlyRent is { } rent ? Currency.Rand(rent) : "—")</td>
                                 <td>
                                     @if (property.Active)
                                     {
@@ -62,10 +64,10 @@
                                     }
                                 </td>
                                 <td class="text-end text-nowrap">
-                                    <a class="btn btn-sm btn-primary" asp-controller="Rooms" asp-action="Index" asp-route-propertyId="@property.Id">Rooms</a>
+                                    <a class="btn btn-sm btn-primary" asp-controller="Photos" asp-action="Index" asp-route-propertyId="@property.Id">Photos (@property.PhotoCount)</a>
                                     <a class="btn btn-sm btn-outline-primary" asp-action="EditProperty" asp-route-id="@property.Id">Edit</a>
                                     <form method="post" asp-action="DeleteProperty" asp-route-id="@property.Id" class="d-inline"
-                                          onsubmit="return confirm('Delete this property and its rooms? This can\'t be undone.');">
+                                          onsubmit="return confirm('Delete this property and its photos? This can\'t be undone.');">
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                                     </form>
                                 </td>
@@ -75,6 +77,6 @@
                 </table>
             </div>
         }
-        <p class="text-muted small">Photos for each property and room are coming next.</p>
+        <p class="text-muted small">Add photos of the outside and of each room. The first photo is the cover shown in listings.</p>
     </div>
 </div>

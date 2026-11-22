@@ -36,6 +36,9 @@ builder.Services.AddDbContext<DatabaseContext>((services, options) =>
 });
 builder.Services.AddLazyCache();
 
+// Property photos are stored on this server under wwwroot/uploads.
+builder.Services.AddSingleton<ZeeAcom.Core.Pictures.IPictureStorage, LocalPictureStorage>();
+
 // Logins: Admin and Landlord accounts stored in the same database (AspNetUsers etc.)
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {

@@ -24,8 +24,6 @@ public partial class DatabaseContext : IdentityDbContext<ApplicationUser>
 
     public virtual DbSet<Picture> Pictures { get; set; }
 
-    public virtual DbSet<Room> Rooms { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Identity table mappings must be configured first.
@@ -38,6 +36,7 @@ public partial class DatabaseContext : IdentityDbContext<ApplicationUser>
             entity.HasIndex(e => e.OwnerId, "IX_Property_OwnerId");
 
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.MonthlyRent).HasPrecision(10, 2);
 
             entity.HasOne(d => d.Owner).WithMany(p => p.Properties).HasForeignKey(d => d.OwnerId);
         });
@@ -62,22 +61,10 @@ public partial class DatabaseContext : IdentityDbContext<ApplicationUser>
 
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
+            entity.Property(e => e.Caption).HasMaxLength(100);
+            entity.Property(e => e.ThumbnailUrl).HasMaxLength(400);
+
             entity.HasOne(d => d.Property).WithMany(p => p.Pictures).HasForeignKey(d => d.PropertyId);
-        });
-
-        modelBuilder.Entity<Room>(entity =>
-        {
-            entity.ToTable("Room");
-
-            entity.HasIndex(e => e.PropertyId, "IX_Room_PropertyId");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Name).HasMaxLength(100);
-            entity.Property(e => e.Description).HasMaxLength(1000);
-            entity.Property(e => e.MonthlyRent).HasPrecision(10, 2);
-
-            // Deleting a property deletes its rooms.
-            entity.HasOne(d => d.Property).WithMany(p => p.Rooms).HasForeignKey(d => d.PropertyId).OnDelete(DeleteBehavior.Cascade);
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -1,5 +1,6 @@
 using MediatR;
 using ZeeAcom.Common.Models;
+using ZeeAcom.Core.Pictures;
 using ZeeAcom.DataAccess;
 
 namespace ZeeAcom.Core.Properties.Commands;
@@ -15,7 +16,7 @@ public class DeletePropertyCommand : IRequest<Result>
     public Guid? RequiredOwnerId { get; set; }
 }
 
-public class DeletePropertyCommandHandler(DatabaseContext databaseContext) : IRequestHandler<DeletePropertyCommand, Result>
+public class DeletePropertyCommandHandler(DatabaseContext databaseContext, IPictureStorage storage) : IRequestHandler<DeletePropertyCommand, Result>
 {
     private const string Error = "Error deleting a property record";
 
@@ -29,6 +30,13 @@ public class DeletePropertyCommandHandler(DatabaseContext databaseContext) : IRe
 
         databaseContext.Properties.Remove(property);
         var result = await databaseContext.SaveChangesAsync(cancellationToken);
-        return result > 0 ? Result.Success() : Result.Failure(Error);
+        if (result <= 0)
+        {
+            return Result.Failure(Error);
+        }
+
+        // Picture rows go with the property (cascade); remove the photo files too.
+        storage.DeleteAllForProperty(property.Id);
+        return Result.Success();
     }
 }
