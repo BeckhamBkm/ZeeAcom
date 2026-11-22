@@ -39,11 +39,16 @@ public class LandlordController(IMediator mediator, UserManager<ApplicationUser>
         }, cancellationToken);
         var enquiries = await mediator.Send(new GetEnquiriesQuery { OwnerId = owner.Id }, cancellationToken);
 
+        var allEnquiries = enquiries.Data?.ToList() ?? [];
+        var weekAgo = DateTime.UtcNow.AddDays(-7);
+
         return View(new LandlordDashboardViewModel
         {
             Owner = owner,
-            Properties = properties.Data ?? [],
-            EnquiryCount = enquiries.Count ?? 0,
+            Properties = properties.Data?.ToList() ?? [],
+            EnquiryCount = enquiries.Count ?? allEnquiries.Count,
+            EnquiriesThisWeek = allEnquiries.Count(e => e.DateCreated >= weekAgo),
+            RecentEnquiries = allEnquiries.Take(3).ToList(),
         });
     }
 

@@ -14,14 +14,14 @@
         }
         else
         {
-            <li class="breadcrumb-item"><a asp-controller="Landlord" asp-action="Index">My listings</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Landlord" asp-action="Index">Dashboard</a></li>
         }
         <li class="breadcrumb-item active" aria-current="page">@Model.Property.Name</li>
     </ol>
 </nav>
 
 <div class="mb-3">
-    <h1 class="h3 mb-1">Photos of @Model.Property.Name</h1>
+    <h1 class="h2 mb-1">Photos of @Model.Property.Name</h1>
     <p class="text-muted mb-0">
         @Model.Property.Address, @Model.Property.Suburb
         @if (Model.Property.MonthlyRent is { } rent)
@@ -64,7 +64,7 @@
                     </div>
                 </div>
                 <div class="col-md-auto">
-                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <button type="submit" class="btn btn-accent"><i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i>Upload</button>
                 </div>
             </form>
         }
@@ -77,7 +77,8 @@
 
 @if (!pictures.Any())
 {
-    <div class="border rounded p-4 text-center text-muted">
+    <div class="empty-state">
+        <i class="bi bi-camera" aria-hidden="true"></i>
         No photos yet. Listings with good photos get far more enquiries.
     </div>
 }

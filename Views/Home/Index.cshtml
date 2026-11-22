@@ -5,72 +5,123 @@
     ViewData["Description"] = "Find rooms, flats and houses to rent in Zeerust, listed by local landlords.";
 }
 
-<div class="p-4 p-md-5 mb-4 bg-body-tertiary rounded-3">
-    <h1 class="display-6 fw-bold">Find a place to stay in Zeerust</h1>
-    <p class="fs-5 col-lg-8">Rooms, flats and houses listed by local landlords. Contact them directly on WhatsApp.</p>
+<section class="za-hero mb-5">
+    <div class="za-hero-sun"></div>
+    <div class="position-relative col-lg-9">
+        <span class="za-pill mb-3"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i>Zeerust, North West</span>
+        <h1 class="display-5 mb-3">Find your next place to stay in Zeerust</h1>
+        <p class="lead mb-4 col-lg-10">Rooms, flats and houses listed by local landlords. See the photos, check the rent, and WhatsApp the landlord directly.</p>
 
-    <form method="get" asp-controller="Listings" asp-action="Index" class="row g-2 col-lg-9">
-        <div class="col-12 col-sm-5">
-            <label class="visually-hidden" for="suburb">Area</label>
-            <select id="suburb" name="suburb" class="form-select form-select-lg">
-                <option value="">All areas</option>
-                @foreach (var suburb in Model.Suburbs)
-                {
-                    <option value="@suburb">@suburb</option>
-                }
-            </select>
-        </div>
-        <div class="col-12 col-sm-4">
-            <label class="visually-hidden" for="maxRent">Max rent</label>
-            <select id="maxRent" name="maxRent" class="form-select form-select-lg">
-                <option value="">Any rent</option>
-                @foreach (var step in ListingsPageViewModel.RentSteps)
-                {
-                    <option value="@step">Up to @Currency.Rand(step)</option>
-                }
-            </select>
-        </div>
-        <div class="col-12 col-sm-3 d-grid">
-            <button type="submit" class="btn btn-primary btn-lg">Search</button>
-        </div>
-    </form>
+        <form method="get" asp-controller="Listings" asp-action="Index" class="za-search row g-2 mx-0 col-lg-11">
+            <div class="col-12 col-sm-5">
+                <label class="visually-hidden" for="suburb">Area</label>
+                <select id="suburb" name="suburb" class="form-select form-select-lg">
+                    <option value="">All areas</option>
+                    @foreach (var suburb in Model.Suburbs)
+                    {
+                        <option value="@suburb">@suburb</option>
+                    }
+                </select>
+            </div>
+            <div class="col-12 col-sm-4">
+                <label class="visually-hidden" for="maxRent">Max rent</label>
+                <select id="maxRent" name="maxRent" class="form-select form-select-lg">
+                    <option value="">Any rent</option>
+                    @foreach (var step in ListingsPageViewModel.RentSteps)
+                    {
+                        <option value="@step">Up to @Currency.Rand(step)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-12 col-sm-3 d-grid">
+                <button type="submit" class="btn btn-accent btn-lg"><i class="bi bi-search me-1" aria-hidden="true"></i>Search</button>
+            </div>
+        </form>
 
-    <div class="mt-4">
-        @if (User.IsInRole(Roles.Admin))
+        <div class="d-flex flex-wrap gap-2 mt-4">
+            @if (User.IsInRole(Roles.Admin))
+            {
+                <a class="za-pill text-decoration-none" asp-controller="Owners" asp-action="Index"><i class="bi bi-people" aria-hidden="true"></i>Manage owners</a>
+                <a class="za-pill text-decoration-none" asp-controller="Properties" asp-action="Index"><i class="bi bi-buildings" aria-hidden="true"></i>Manage properties</a>
+            }
+            else if (User.IsInRole(Roles.Landlord))
+            {
+                <a class="za-pill text-decoration-none" asp-controller="Landlord" asp-action="Index"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Go to my dashboard</a>
+            }
+            else
+            {
+                <span class="za-pill"><i class="bi bi-check2-circle" aria-hidden="true"></i>Free to use</span>
+                <span class="za-pill"><i class="bi bi-whatsapp" aria-hidden="true"></i>Contact landlords directly</span>
+                <span class="za-pill"><i class="bi bi-shield-check" aria-hidden="true"></i>Landlords checked by us</span>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="mb-5">
+    <div class="d-flex justify-content-between align-items-end mb-3">
+        <div>
+            <div class="eyebrow mb-1">Just listed</div>
+            <h2 class="h3 mb-0">Latest places</h2>
+        </div>
+        @if (Model.TotalListings > 0)
         {
-            <a class="btn btn-outline-secondary" asp-controller="Owners" asp-action="Index">Manage owners</a>
-            <a class="btn btn-outline-secondary" asp-controller="Properties" asp-action="Index">Manage properties</a>
-        }
-        else if (User.IsInRole(Roles.Landlord))
-        {
-            <a class="btn btn-outline-secondary" asp-controller="Landlord" asp-action="Index">My listings</a>
-        }
-        else
-        {
-            <span class="text-muted me-2">Got a place to rent out?</span>
-            <a asp-controller="Account" asp-action="Register">List it for free</a>
+            <a class="btn btn-light-soft" asp-controller="Listings" asp-action="Index">See all @Model.TotalListings <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i></a>
         }
     </div>
-</div>
 
-<div class="d-flex justify-content-between align-items-baseline mb-3">
-    <h2 class="h4 mb-0">Latest listings</h2>
-    @if (Model.TotalListings > 0)
+    @if (!Model.LatestListings.Any())
     {
-        <a asp-controller="Listings" asp-action="Index">See all @Model.TotalListings</a>
+        <div class="empty-state">
+            <i class="bi bi-house" aria-hidden="true"></i>
+            No listings yet. Check back soon.
+        </div>
     }
-</div>
+    else
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+            @foreach (var listing in Model.LatestListings)
+            {
+                <div class="col"><partial name="_ListingCard" model="listing" /></div>
+            }
+        </div>
+    }
+</section>
 
-@if (!Model.LatestListings.Any())
-{
-    <p class="text-muted">No listings yet. Check back soon.</p>
-}
-else
-{
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
-        @foreach (var listing in Model.LatestListings)
-        {
-            <div class="col"><partial name="_ListingCard" model="listing" /></div>
-        }
+<section class="mb-5">
+    <div class="text-center mb-4">
+        <div class="eyebrow mb-1">How it works</div>
+        <h2 class="h3">Find a place in three steps</h2>
     </div>
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <span class="step-icon mb-3"><i class="bi bi-search" aria-hidden="true"></i></span>
+            <h3 class="h6">Search</h3>
+            <p class="text-muted small mb-0">Filter by area and your budget to see what's available right now.</p>
+        </div>
+        <div class="col-md-4">
+            <span class="step-icon mb-3"><i class="bi bi-images" aria-hidden="true"></i></span>
+            <h3 class="h6">Look around</h3>
+            <p class="text-muted small mb-0">See photos of each room, the address and the monthly rent up front.</p>
+        </div>
+        <div class="col-md-4">
+            <span class="step-icon step-icon-sun mb-3"><i class="bi bi-whatsapp" aria-hidden="true"></i></span>
+            <h3 class="h6">Contact the landlord</h3>
+            <p class="text-muted small mb-0">WhatsApp, call or send an enquiry. No agents in the middle.</p>
+        </div>
+    </div>
+</section>
+
+@if (!User.IsInRole(Roles.Admin) && !User.IsInRole(Roles.Landlord))
+{
+    <section class="za-cta p-4 p-md-5 d-md-flex align-items-center justify-content-between gap-4">
+        <div class="d-flex gap-3 align-items-start mb-3 mb-md-0">
+            <span class="step-icon step-icon-sun flex-shrink-0"><i class="bi bi-key" aria-hidden="true"></i></span>
+            <div>
+                <h2 class="h4 mb-1">Got a room or house to rent out?</h2>
+                <p class="text-muted mb-0">List it on Zee Accom for free and get enquiries straight to your phone.</p>
+            </div>
+        </div>
+        <a class="btn btn-accent btn-lg text-nowrap" asp-controller="Account" asp-action="Register">List your place</a>
+    </section>
 }

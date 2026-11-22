@@ -1,107 +1,268 @@
 @model LandlordDashboardViewModel
 @{
-    ViewData["Title"] = "My listings";
+    ViewData["Title"] = "Dashboard";
+    var owner = Model.Owner;
+    var (statusClass, statusText) = owner.Status switch
+    {
+        OwnerStatus.Approved => ("", "Approved"),
+        OwnerStatus.Pending => ("dash-status-pending", "Waiting for approval"),
+        _ => ("dash-status-hidden", "Listings hidden"),
+    };
+    var needPhotos = Model.Properties.Count(p => p.PhotoCount == 0);
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0">Hi, @Model.Owner.FirstName</h1>
-    <a class="btn btn-primary" asp-action="AddProperty">Add property</a>
+@* ---------- Welcome banner ---------- *@
+<section class="dash-hero mb-4">
+    <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <span class="za-avatar za-avatar-lg d-none d-sm-inline-flex">@Avatar.Initials($"{owner.FirstName} {owner.LastName}")</span>
+            <div>
+                <span class="dash-status @statusClass mb-2"><span class="dash-status-dot"></span>@statusText</span>
+                <h1 class="h2 mb-1">@Model.Greeting, @owner.FirstName</h1>
+                <p class="text-white-75 mb-0">
+                    @if (Model.Properties.Count == 0)
+                    {
+                        <text>Let's get your first place listed. It only takes a few minutes.</text>
+                    }
+                    else if (Model.EnquiriesThisWeek > 0)
+                    {
+                        <text>You've had @Model.EnquiriesThisWeek @(Model.EnquiriesThisWeek == 1 ? "enquiry" : "enquiries") this week. Nice!</text>
+                    }
+                    else
+                    {
+                        <text>Here's how your listings are doing.</text>
+                    }
+                </p>
+            </div>
+        </div>
+        <a class="btn btn-accent btn-lg" asp-action="AddProperty"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Add property</a>
+    </div>
+</section>
+
+@if (owner.Status == OwnerStatus.Pending)
+{
+    <div class="alert alert-warning d-flex gap-3 align-items-start mb-4" role="status">
+        <i class="bi bi-hourglass-split fs-4" aria-hidden="true"></i>
+        <div>
+            <strong>Your account is waiting for approval.</strong>
+            You can add your properties and photos now. They'll show on the public site once Zee Accom has approved your account.
+        </div>
+    </div>
+}
+else if (owner.Status == OwnerStatus.Hidden)
+{
+    <div class="alert alert-danger d-flex gap-3 align-items-start mb-4" role="status">
+        <i class="bi bi-eye-slash fs-4" aria-hidden="true"></i>
+        <div>
+            <strong>Your listings are hidden from the public site.</strong>
+            Contact Zee Accom to find out why and to have them shown again.
+        </div>
+    </div>
+}
+
+@* ---------- Stats ---------- *@
+<div class="row row-cols-2 row-cols-lg-4 g-3 mb-4">
+    <div class="col">
+        <div class="stat-tile">
+            <span class="stat-icon"><i class="bi bi-house-door" aria-hidden="true"></i></span>
+            <div><div class="stat-value">@Model.Properties.Count</div><div class="stat-label">@(Model.Properties.Count == 1 ? "Property" : "Properties")</div></div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="stat-tile">
+            <span class="stat-icon stat-icon-blue"><i class="bi bi-broadcast" aria-hidden="true"></i></span>
+            <div><div class="stat-value">@Model.LiveCount</div><div class="stat-label">Live on the site</div></div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="stat-tile">
+            <span class="stat-icon stat-icon-plum"><i class="bi bi-images" aria-hidden="true"></i></span>
+            <div><div class="stat-value">@Model.PhotoCount</div><div class="stat-label">Photos</div></div>
+        </div>
+    </div>
+    <div class="col">
+        <a class="stat-tile" asp-action="Enquiries">
+            <span class="stat-icon stat-icon-sun"><i class="bi bi-chat-heart" aria-hidden="true"></i></span>
+            <div>
+                <div class="stat-value">@Model.EnquiryCount</div>
+                <div class="stat-label">
+                    Enquiries
+                    @if (Model.EnquiriesThisWeek > 0)
+                    {
+                        <span class="d-block text-success fw-bold">+@Model.EnquiriesThisWeek this week</span>
+                    }
+                </div>
+            </div>
+        </a>
+    </div>
 </div>
 
-@if (Model.Owner.Status == OwnerStatus.Pending)
-{
-    <div class="alert alert-info" role="status">
-        <strong>Your account is waiting for approval.</strong>
-        You can add your properties and photos now. They'll show on the public site once Zee Accom has approved your account.
-    </div>
-}
-else if (Model.Owner.Status == OwnerStatus.Hidden)
-{
-    <div class="alert alert-warning" role="status">
-        <strong>Your listings are hidden from the public site.</strong>
-        Contact Zee Accom to find out why and to have them shown again.
-    </div>
-}
-
 <div class="row g-4">
-    <div class="col-lg-4">
-        <div class="card">
-            <div class="card-header">My details</div>
-            <div class="card-body">
-                <p class="mb-1 fw-semibold">@Model.Owner.FirstName @Model.Owner.LastName</p>
-                <p class="mb-1">@Model.Owner.CellPhone</p>
-                <p class="mb-0">@Model.Owner.Email</p>
-            </div>
-        </div>
-        <div class="card mt-3">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <span>Enquiries <span class="badge text-bg-primary">@Model.EnquiryCount</span></span>
-                <a asp-action="Enquiries" class="btn btn-sm btn-outline-primary">View</a>
-            </div>
-        </div>
-    </div>
-
+    @* ---------- Properties ---------- *@
     <div class="col-lg-8">
-        <h2 class="h5">My properties</h2>
-        @if (!Model.Properties.Any())
+        @if (!Model.ChecklistDone)
         {
-            <div class="border rounded p-4 text-center text-muted">
-                <p class="mb-3">You haven't listed any properties yet.</p>
-                <a class="btn btn-outline-primary" asp-action="AddProperty">Add your first property</a>
-            </div>
+            @* On phones the checklist comes first; on wide screens it's in the side column. *@
+            <div class="d-lg-none mb-4"><partial name="_Checklist" model="Model" /></div>
         }
-        else
-        {
-            <div class="table-responsive">
-                <table class="table table-striped align-middle">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Name</th>
-                            <th>Address</th>
-                            <th>Suburb</th>
-                            <th class="text-end">Rent / month</th>
-                            <th>Status</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var property in Model.Properties)
-                        {
-                            <tr>
-                                <td><partial name="_CoverThumb" model="property" /></td>
-                                <td>@if (property.IsPublic) { <a asp-controller="Listings" asp-action="Details" asp-route-id="@property.Id" title="View public listing">@property.Name</a> } else { @property.Name }</td>
-                                <td>@property.Address</td>
-                                <td>@property.Suburb</td>
-                                <td class="text-end text-nowrap">@(property.MonthlyRent is { } rent ? Currency.Rand(rent) : "—")</td>
-                                <td>
-                                    @if (property.Active)
+        <div class="d-flex flex-wrap justify-content-between align-items-baseline column-gap-3 row-gap-1 mb-3">
+            <h2 class="h5 mb-0 text-nowrap">My properties</h2>
+            @if (needPhotos > 0)
+            {
+                <span class="small text-muted"><i class="bi bi-camera me-1" aria-hidden="true"></i>@needPhotos still @(needPhotos == 1 ? "needs" : "need") photos</span>
+            }
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 g-3">
+            @foreach (var property in Model.Properties)
+            {
+                <div class="col">
+                    <div class="card prop-card">
+                        <div class="prop-card-photo">
+                            @if (property.CoverThumbnailUrl is not null)
+                            {
+                                <a asp-controller="Photos" asp-action="Index" asp-route-propertyId="@property.Id">
+                                    <img src="@property.CoverThumbnailUrl" alt="@property.Name" loading="lazy"
+                                         onerror="this.onerror=null;this.src='/img/no-photo.svg';" />
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="prop-card-nophoto" asp-controller="Photos" asp-action="Index" asp-route-propertyId="@property.Id">
+                                    <i class="bi bi-camera" aria-hidden="true"></i>Add photos
+                                </a>
+                            }
+                            <div class="prop-card-badges">
+                                @if (property.IsPublic)
+                                {
+                                    <span class="badge badge-live">Live</span>
+                                }
+                                else if (!property.Active)
+                                {
+                                    <span class="badge text-bg-secondary">Not available</span>
+                                }
+                                else if (!property.HiddenByAdmin)
+                                {
+                                    <span class="badge text-bg-light">Not public yet</span>
+                                }
+                                @if (property.HiddenByAdmin)
+                                {
+                                    <span class="badge text-bg-danger" title="Contact Zee Accom to have it shown again">Hidden by Zee Accom</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-body pb-2">
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <h3 class="h6 mb-1">
+                                    @if (property.IsPublic)
                                     {
-                                        <span class="badge text-bg-success">Available</span>
+                                        <a asp-controller="Listings" asp-action="Details" asp-route-id="@property.Id" class="text-body text-decoration-none" title="View public listing">@property.Name</a>
                                     }
                                     else
                                     {
-                                        <span class="badge text-bg-secondary">Not available</span>
+                                        @property.Name
                                     }
-                                    @if (property.HiddenByAdmin)
-                                    {
-                                        <span class="badge text-bg-danger" title="Contact Zee Accom to have it shown again">Hidden by Zee Accom</span>
-                                    }
-                                </td>
-                                <td class="text-end text-nowrap">
-                                    <a class="btn btn-sm btn-primary" asp-controller="Photos" asp-action="Index" asp-route-propertyId="@property.Id">Photos (@property.PhotoCount)</a>
-                                    <a class="btn btn-sm btn-outline-primary" asp-action="EditProperty" asp-route-id="@property.Id">Edit</a>
-                                    <form method="post" asp-action="DeleteProperty" asp-route-id="@property.Id" class="d-inline"
-                                          onsubmit="return confirm('Delete this property and its photos? This can\'t be undone.');">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                                </h3>
+                                <span class="prop-card-rent text-nowrap">@(property.MonthlyRent is { } rent ? Currency.Rand(rent) : "—")</span>
+                            </div>
+                            <p class="text-muted small mb-0"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i>@property.Address, @property.Suburb</p>
+                        </div>
+                        <div class="card-footer d-flex gap-2 align-items-center">
+                            <a class="btn btn-sm btn-light-soft" asp-controller="Photos" asp-action="Index" asp-route-propertyId="@property.Id">
+                                <i class="bi bi-images me-1" aria-hidden="true"></i>@property.PhotoCount
+                            </a>
+                            <a class="btn btn-sm btn-light-soft" asp-action="EditProperty" asp-route-id="@property.Id"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Edit</a>
+                            @if (property.IsPublic)
+                            {
+                                <a class="btn btn-sm btn-light-soft" asp-controller="Listings" asp-action="Details" asp-route-id="@property.Id" title="View public listing">
+                                    <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i><span class="visually-hidden">View public listing</span>
+                                </a>
+                            }
+                            <form method="post" asp-action="DeleteProperty" asp-route-id="@property.Id" class="ms-auto"
+                                  onsubmit="return confirm('Delete this property and its photos? This can\'t be undone.');">
+                                <button type="submit" class="btn btn-sm btn-link text-danger p-1" title="Delete property">
+                                    <i class="bi bi-trash3" aria-hidden="true"></i><span class="visually-hidden">Delete @property.Name</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="col">
+                <a class="prop-card-add" asp-action="AddProperty">
+                    <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                    @(Model.Properties.Count == 0 ? "Add your first property" : "Add another property")
+                    <span class="small fw-normal text-muted">House, flat, cottage or room</span>
+                </a>
             </div>
+        </div>
+    </div>
+
+    @* ---------- Side column ---------- *@
+    <div class="col-lg-4 vstack gap-4">
+        @if (!Model.ChecklistDone)
+        {
+            <div class="d-none d-lg-block"><partial name="_Checklist" model="Model" /></div>
         }
-        <p class="text-muted small">Add photos of the outside and of each room. The first photo is the cover shown in listings.</p>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h2 class="h6 mb-0">Latest enquiries</h2>
+                    @if (Model.EnquiryCount > 0)
+                    {
+                        <a class="small fw-semibold" asp-action="Enquiries">See all @Model.EnquiryCount</a>
+                    }
+                </div>
+                @if (!Model.RecentEnquiries.Any())
+                {
+                    <div class="text-center text-muted py-3">
+                        <i class="bi bi-chat-dots fs-2 d-block mb-1" aria-hidden="true"></i>
+                        <span class="small">No enquiries yet. When someone contacts you through a listing, it shows up here.</span>
+                    </div>
+                }
+                @foreach (var enquiry in Model.RecentEnquiries)
+                {
+                    var whatsApp = PhoneLinks.WhatsApp(enquiry.CellPhone, $"Hi {enquiry.Name}, thanks for your enquiry about {enquiry.PropertyName} on Zee Accom.");
+                    <div class="enquiry-item d-flex gap-3 py-3">
+                        <span class="za-avatar">@Avatar.Initials(enquiry.Name)</span>
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="d-flex justify-content-between gap-2">
+                                <span class="fw-semibold text-truncate">@enquiry.Name</span>
+                                <span class="small text-muted text-nowrap">@TimeAgo.From(enquiry.DateCreated)</span>
+                            </div>
+                            <div class="small text-muted mb-1">about @enquiry.PropertyName</div>
+                            <p class="small mb-2 enquiry-message">@enquiry.Message</p>
+                            @if (whatsApp is not null)
+                            {
+                                <a href="@whatsApp" class="btn btn-sm btn-whatsapp" target="_blank" rel="noopener"><i class="bi bi-whatsapp me-1" aria-hidden="true"></i>Reply</a>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h2 class="h6 mb-3">My details</h2>
+                <div class="vstack gap-2 small">
+                    <div><i class="bi bi-person me-2 text-muted" aria-hidden="true"></i>@owner.FirstName @owner.LastName</div>
+                    <div><i class="bi bi-phone me-2 text-muted" aria-hidden="true"></i>@owner.CellPhone</div>
+                    <div class="text-truncate"><i class="bi bi-envelope me-2 text-muted" aria-hidden="true"></i>@owner.Email</div>
+                </div>
+                <p class="small text-muted mt-3 mb-0">Renters see your first name and cell number on your listings, never your surname or email.</p>
+            </div>
+        </div>
+
+        <div class="card tip-card">
+            <div class="card-body d-flex gap-3">
+                <i class="bi bi-lightbulb fs-4 text-success" aria-hidden="true"></i>
+                <div class="small">
+                    <strong class="d-block mb-1">Tip: lead with your best photo</strong>
+                    The first photo is the cover in search results. A bright photo of the outside or the main room works best.
+                </div>
+            </div>
+        </div>
     </div>
 </div>

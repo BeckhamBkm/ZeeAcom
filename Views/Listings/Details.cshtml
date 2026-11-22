@@ -24,11 +24,11 @@
     <div class="col-lg-8">
         @if (pictures.Count == 0)
         {
-            <img src="/img/no-photo.svg" alt="No photo yet" class="img-fluid rounded w-100" />
+            <img src="/img/no-photo.svg" alt="No photo yet" class="img-fluid rounded-4 w-100" />
         }
         else
         {
-            <div id="gallery" class="carousel slide bg-dark rounded overflow-hidden" data-bs-ride="false">
+            <div id="gallery" class="carousel slide bg-dark rounded-4 overflow-hidden shadow" data-bs-ride="false">
                 <div class="carousel-inner">
                     @for (var i = 0; i < pictures.Count; i++)
                     {
@@ -54,7 +54,7 @@
             </div>
             @if (pictures.Count > 1)
             {
-                <div class="d-flex gap-2 mt-2 overflow-auto pb-1">
+                <div class="d-flex gap-2 mt-2 overflow-auto gallery-strip">
                     @for (var i = 0; i < pictures.Count; i++)
                     {
                         <button type="button" class="btn p-0 border-0 flex-shrink-0" data-bs-target="#gallery" data-bs-slide-to="@i"
@@ -67,45 +67,53 @@
             }
         }
 
-        <h1 class="h3 mt-4 mb-1">@listing.Name</h1>
-        <p class="text-muted">@listing.Address, @listing.Suburb</p>
+        <h1 class="h2 mt-4 mb-1">@listing.Name</h1>
+        <p class="text-muted mb-3"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i>@listing.Address, @listing.Suburb</p>
+        <div class="d-flex flex-wrap gap-2">
+            <span class="badge text-bg-light border"><i class="bi bi-images me-1" aria-hidden="true"></i>@(pictures.Count == 1 ? "1 photo" : $"{pictures.Count} photos")</span>
+            <span class="badge text-bg-light border"><i class="bi bi-calendar3 me-1" aria-hidden="true"></i>Listed @TimeAgo.From(listing.DateCreated)</span>
+        </div>
     </div>
 
     <div class="col-lg-4">
-        <div class="card shadow-sm mb-3">
-            <div class="card-body">
-                <p class="h3 mb-0">
+        <div class="contact-card vstack gap-3">
+        <div class="card">
+            <div class="card-body p-4">
+                <p class="h2 mb-0">
                     @if (listing.MonthlyRent is { } rent)
                     {
-                        @Currency.Rand(rent)<span class="fs-6 text-muted"> / month</span>
+                        @Currency.Rand(rent)<span class="fs-6 text-muted fw-semibold"> / month</span>
                     }
                     else
                     {
                         <span class="fs-5 text-muted">Rent on request</span>
                     }
                 </p>
-                <p class="text-muted small mb-3">Listed by @listing.LandlordFirstName</p>
+                <div class="d-flex align-items-center gap-2 my-3">
+                    <span class="za-avatar za-avatar-green">@Avatar.Initials(listing.LandlordFirstName)</span>
+                    <div class="small"><span class="text-muted">Listed by</span><br /><strong>@listing.LandlordFirstName</strong></div>
+                </div>
 
                 <div class="d-grid gap-2">
                     @if (Model.WhatsAppUrl is not null)
                     {
-                        <a href="@Model.WhatsAppUrl" class="btn btn-success" target="_blank" rel="noopener">WhatsApp @listing.LandlordFirstName</a>
+                        <a href="@Model.WhatsAppUrl" class="btn btn-whatsapp py-2 fs-6" target="_blank" rel="noopener"><i class="bi bi-whatsapp me-2" aria-hidden="true"></i>WhatsApp @listing.LandlordFirstName</a>
                     }
                     @if (Model.CallUrl is not null)
                     {
-                        <a href="@Model.CallUrl" class="btn btn-outline-primary">Call @listing.LandlordCellPhone</a>
+                        <a href="@Model.CallUrl" class="btn btn-outline-primary"><i class="bi bi-telephone me-2" aria-hidden="true"></i>Call @listing.LandlordCellPhone</a>
                     }
                 </div>
             </div>
         </div>
 
-        <div class="card shadow-sm" id="enquire">
+        <div class="card" id="enquire">
             <div class="card-body">
                 <h2 class="h5">Send an enquiry</h2>
                 @if (enquirySent)
                 {
                     <div class="alert alert-success mb-0" role="status">
-                        Thanks! Your message was sent to @listing.LandlordFirstName, who will get back to you.
+                        <i class="bi bi-check-circle-fill me-1" aria-hidden="true"></i>Thanks! Your message was sent to @listing.LandlordFirstName, who will get back to you.
                     </div>
                 }
                 else
@@ -140,10 +148,11 @@
                                       placeholder="e.g. Hi, is this still available? When can I view it?"></textarea>
                             <span asp-validation-for="Enquiry.Message" class="text-danger small"></span>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Send enquiry</button>
+                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-send me-2" aria-hidden="true"></i>Send enquiry</button>
                     </form>
                 }
             </div>
+        </div>
         </div>
     </div>
 </div>

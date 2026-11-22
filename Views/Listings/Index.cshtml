@@ -5,12 +5,20 @@
     ViewData["Description"] = "Rooms, flats and houses to rent in Zeerust, listed by local landlords.";
 }
 
-<h1 class="h3 mb-3">Accommodation to rent in Zeerust</h1>
+<div class="page-head mb-3">
+    <div>
+        <div class="eyebrow mb-1">Zeerust</div>
+        <h1 class="h2 mb-0">Places to rent</h1>
+    </div>
+</div>
 
-<form method="get" asp-action="Index" class="row g-2 mb-4">
+<form method="get" asp-action="Index" class="filter-bar row g-2 mx-0 mb-4">
     <div class="col-12 col-md-4">
         <label class="visually-hidden" for="text">Search</label>
-        <input id="text" name="text" value="@Model.Text" class="form-control" placeholder="Search by name or street" />
+        <div class="input-group">
+            <span class="input-group-text bg-white"><i class="bi bi-search" aria-hidden="true"></i></span>
+            <input id="text" name="text" value="@Model.Text" class="form-control border-start-0" placeholder="Name or street" />
+        </div>
     </div>
     <div class="col-6 col-md-2">
         <label class="visually-hidden" for="suburb">Area</label>
@@ -47,14 +55,15 @@
 
 @if (!Model.Listings.Any())
 {
-    <div class="border rounded p-5 text-center text-muted">
-        <p class="mb-2">No properties match your search.</p>
-        <a asp-action="Index">See all listings</a>
+    <div class="empty-state">
+        <i class="bi bi-house-slash" aria-hidden="true"></i>
+        <p class="mb-2">No places match your search.</p>
+        <a asp-action="Index" class="fw-semibold">See all listings</a>
     </div>
 }
 else
 {
-    <p class="text-muted small">@Model.Total @(Model.Total == 1 ? "property" : "properties")</p>
+    <p class="text-muted small mb-3">@Model.Total @(Model.Total == 1 ? "place" : "places") to rent</p>
     <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4 mb-4">
         @foreach (var listing in Model.Listings)
         {

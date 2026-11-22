@@ -4,13 +4,53 @@
     ViewData["Title"] = isNew ? "Add property" : $"Edit {Model.Name}";
 }
 
-<h1 class="h3 mb-3">@(isNew ? "Add a property" : "Edit property")</h1>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@(isNew ? "Add property" : Model.Name)</li>
+    </ol>
+</nav>
 
-<form method="post" asp-action="@(isNew ? "AddProperty" : "EditProperty")" asp-route-id="@Model.Id" class="col-lg-6">
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-body p-4 p-md-5">
+                <h1 class="h3 mb-1">@(isNew ? "Add a property" : "Edit property")</h1>
+                <p class="text-muted mb-4">@(isNew ? "Start with the basics. You'll add photos on the next step." : "Changes show on your listing straight away.")</p>
 
-    <partial name="_PropertyFields" model="Model" />
+                <form method="post" asp-action="@(isNew ? "AddProperty" : "EditProperty")" asp-route-id="@Model.Id">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
-    <button type="submit" class="btn btn-primary">@(isNew ? "Add property" : "Save changes")</button>
-    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
-</form>
+                    <partial name="_PropertyFields" model="Model" />
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            @if (isNew)
+                            {
+                                <text>Next: add photos <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i></text>
+                            }
+                            else
+                            {
+                                <text>Save changes</text>
+                            }
+                        </button>
+                        <a asp-action="Index" class="btn btn-light-soft btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card tip-card">
+            <div class="card-body p-4">
+                <h2 class="h6"><i class="bi bi-lightbulb me-2 text-success" aria-hidden="true"></i>Tips for a great listing</h2>
+                <ul class="small mb-0 ps-3 vstack gap-2">
+                    <li>Give it a clear name renters will recognise, like <em>"Garden Cottage"</em> or <em>"Room near the taxi rank"</em>.</li>
+                    <li>Use the area people search for, like <em>Ikageleng</em> or <em>Zeerust Central</em>.</li>
+                    <li>Include what the rent covers (water, electricity, Wi-Fi) in your photo captions.</li>
+                    <li>Untick <strong>Available</strong> when it's rented out; it disappears from the site until you tick it again.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

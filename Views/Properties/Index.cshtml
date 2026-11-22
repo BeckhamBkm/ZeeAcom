@@ -5,7 +5,7 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">
+    <h1 class="h2 mb-0">
         Properties
         @if (selectedOwner is not null)
         {
@@ -15,7 +15,7 @@
     <a class="btn btn-primary" asp-action="Create" asp-route-ownerId="@Model.OwnerId">Add property</a>
 </div>
 
-<form method="get" asp-action="Index" class="row g-2 mb-3">
+<form method="get" asp-action="Index" class="filter-bar row g-2 mx-0 mb-4">
     <div class="col-md-3">
         <input asp-for="Name" class="form-control" placeholder="Name" />
     </div>
@@ -46,7 +46,7 @@
 }
 else
 {
-    <div class="table-responsive">
+    <div class="table-responsive table-card mb-3">
         <table class="table table-striped align-middle">
             <thead>
                 <tr>
